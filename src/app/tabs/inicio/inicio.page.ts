@@ -5,6 +5,7 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
+  IonButtons,
   IonContent,
   IonCard,
   IonCardContent,
@@ -25,6 +26,7 @@ import {
     IonHeader,
     IonToolbar,
     IonTitle,
+    IonButtons,
     IonContent,
     IonCard,
     IonCardContent,
@@ -60,5 +62,12 @@ export class InicioPage implements OnInit {
 
   irAPagos() {
     this.router.navigateByUrl('/pagos');
+  }
+
+  cerrarSesion() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario_id');
+    localStorage.removeItem('usuario_nombre');
+    this.router.navigateByUrl('/login');
   }
 }
