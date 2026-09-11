@@ -16,6 +16,19 @@ export interface LoginResponse {
   usuario?: UsuarioLogueado;
 }
 
+export interface Cliente {
+  id: number;
+  nombre: string;
+  telefono: string | null;
+  saldo: number;
+}
+
+export interface ClientesResponse {
+  success: boolean;
+  message?: string;
+  clientes?: Cliente[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -32,5 +45,13 @@ export class ApiService {
         password,
       })
     );
+  }
+
+  async getClientes(buscar?: string): Promise<ClientesResponse> {
+    const url = buscar
+      ? `${this.baseUrl}/clientes.php?buscar=${encodeURIComponent(buscar)}`
+      : `${this.baseUrl}/clientes.php`;
+
+    return firstValueFrom(this.http.get<ClientesResponse>(url));
   }
 }

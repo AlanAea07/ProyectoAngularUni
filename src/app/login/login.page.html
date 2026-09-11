@@ -22,17 +22,17 @@
       ></ion-input>
     </ion-item>
 
-    <div class="login-error" *ngIf="errorMsg">
-      {{ errorMsg }}
+    <div class="login-error" *ngIf="errorMsg()">
+      {{ errorMsg() }}
     </div>
 
     <ion-button
       expand="block"
       class="login-btn"
-      [disabled]="cargando"
+      [disabled]="cargando()"
       (click)="onLogin()"
     >
-      {{ cargando ? 'Entrando...' : 'Entrar' }}
+      {{ cargando() ? 'Entrando...' : 'Entrar' }}
     </ion-button>
 
   </div>

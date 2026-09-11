@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Clientes</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Buscar cliente..."
+      [(ngModel)]="textoBusqueda"
+      (ionInput)="buscar()"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="estado" *ngIf="cargando()">
+    <ion-spinner></ion-spinner>
+    <p>Cargando clientes...</p>
+  </div>
+
+  <div class="estado" *ngIf="!cargando() && errorMsg()">
+    <p>{{ errorMsg() }}</p>
+  </div>
+
+  <div class="estado" *ngIf="!cargando() && !errorMsg() && clientes().length === 0">
+    <p>No hay clientes para mostrar.</p>
+  </div>
+
+  <ion-list *ngIf="!cargando() && clientes().length > 0">
+    <ion-item button *ngFor="let cliente of clientes()">
+      <ion-label>
+        <h2>{{ cliente.nombre }}</h2>
+        <p *ngIf="cliente.telefono">{{ cliente.telefono }}</p>
+      </ion-label>
+      <ion-note slot="end" [color]="cliente.saldo > 0 ? 'danger' : 'success'">
+        {{ cliente.saldo | currency:'MXN':'$' }}
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

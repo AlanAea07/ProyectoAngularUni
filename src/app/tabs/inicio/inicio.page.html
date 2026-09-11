@@ -1,0 +1,62 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Inicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Inicio</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="saludo">
+    <h2>Hola, {{ nombreUsuario }}</h2>
+  </div>
+
+  <!-- Resumen -->
+  <ion-card>
+    <ion-card-content>
+      <div class="deuda-total">
+        <p class="label">Deuda total</p>
+        <h1>{{ deudaTotal | currency:'MXN':'$' }}</h1>
+      </div>
+
+      <ion-grid class="resumen-grid">
+        <ion-row>
+          <ion-col>
+            <p class="valor">{{ clientesConDeuda }}</p>
+            <p class="label">Clientes con deuda</p>
+          </ion-col>
+          <ion-col>
+            <p class="valor">{{ fiadosHoy }}</p>
+            <p class="label">Fiados hoy</p>
+          </ion-col>
+          <ion-col>
+            <p class="valor">{{ abonosHoy | currency:'MXN':'$' }}</p>
+            <p class="label">Abonos hoy</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Accesos rápidos -->
+  <div class="acciones">
+    <ion-button expand="block" size="large" (click)="irANuevoFiado()">
+      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+      Nuevo fiado
+    </ion-button>
+
+    <ion-button expand="block" size="large" fill="outline" (click)="irAClientes()">
+      <ion-icon slot="start" name="people-outline"></ion-icon>
+      Ver clientes
+    </ion-button>
+
+    <ion-button expand="block" size="large" fill="outline" (click)="irAPagos()">
+      <ion-icon slot="start" name="cash-outline"></ion-icon>
+      Pagos / Abonos
+    </ion-button>
+  </div>
+</ion-content>

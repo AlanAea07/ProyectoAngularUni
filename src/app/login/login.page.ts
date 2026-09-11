@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -25,8 +25,10 @@ export class LoginPage {
   usuario: string = '';
   password: string = '';
 
-  cargando: boolean = false;
-  errorMsg: string = '';
+  // Signals: en este proyecto zoneless (sin zone.js), son necesarios para que
+  // la vista se repinte sola cuando cambian después de un await.
+  cargando = signal(false);
+  errorMsg = signal('');
 
   constructor(
     private apiService: ApiService,
@@ -35,14 +37,14 @@ export class LoginPage {
 
   async onLogin(): Promise<void> {
 
-    this.errorMsg = '';
+    this.errorMsg.set('');
 
     if (!this.usuario || !this.password) {
-      this.errorMsg = 'Ingresa usuario y contraseña';
+      this.errorMsg.set('Ingresa usuario y contraseña');
       return;
     }
 
-    this.cargando = true;
+    this.cargando.set(true);
 
     try {
       const response = await this.apiService.login(this.usuario, this.password);
@@ -53,17 +55,17 @@ export class LoginPage {
         localStorage.setItem('usuario_id', String(response.usuario.id));
         localStorage.setItem('usuario_nombre', response.usuario.nombre);
 
-        this.router.navigateByUrl('/tab1');
+        this.router.navigateByUrl('/tabs/inicio');
 
       } else {
-        this.errorMsg = response.message || 'No se pudo iniciar sesión';
+        this.errorMsg.set(response.message || 'No se pudo iniciar sesión');
       }
 
     } catch (error: any) {
       console.error('Error de login:', error);
-      this.errorMsg = 'Error al conectar con el servidor. Revisa que XAMPP esté prendido.';
+      this.errorMsg.set('Error al conectar con el servidor. Revisa que XAMPP esté prendido.');
     } finally {
-      this.cargando = false;
+      this.cargando.set(false);
     }
   }
 }

@@ -10,20 +10,12 @@ export const routes: Routes = [
     loadComponent: () => import('./home/home.page').then((m) => m.HomepagePage),
   },
   {
-    path: 'tab1',
-    loadComponent: () => import('./tab1/tab1.page').then((m) => m.Tab1Page),
+    path: 'tabs',
+    loadChildren: () => import('./tabs/tabs.routes').then((m) => m.tabsRoutes),
   },
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
-  },  {
-    path: 'tab2',
-    loadComponent: () => import('./pages/tab2/tab2.page').then( m => m.Tab2Page)
   },
-  {
-    path: 'tab2',
-    loadComponent: () => import('./tab2/tab2.page').then( m => m.Tab2Page)
-  },
-
 ];
