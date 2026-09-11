@@ -1,0 +1,39 @@
+.login-content {
+  --background: #ae2fc7;
+}
+
+.login-wrap {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 100px 24px 24px;
+}
+
+.login-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.login-input {
+  margin-bottom: 12px;
+  --background: #626262;
+  border-radius: 8px;
+}
+
+.login-error {
+  color: #c0392b;
+  font-size: 13px;
+  margin: 8px 0 16px;
+}
+
+.login-btn {
+  margin-top: 12px;
+  --border-radius: 100px;
+}

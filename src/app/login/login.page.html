@@ -1,0 +1,40 @@
+<ion-content [fullscreen]="true" class="login-content">
+
+  <div class="login-wrap">
+
+    <h1 class="login-title">Dermexcel</h1>
+    <p class="login-subtitle">Inicia sesión para continuar</p>
+
+    <ion-item class="login-input">
+      <ion-label position="floating">Usuario</ion-label>
+      <ion-input
+        [(ngModel)]="usuario"
+        type="text"
+        autocapitalize="off"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item class="login-input">
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input
+        [(ngModel)]="password"
+        type="password"
+      ></ion-input>
+    </ion-item>
+
+    <div class="login-error" *ngIf="errorMsg">
+      {{ errorMsg }}
+    </div>
+
+    <ion-button
+      expand="block"
+      class="login-btn"
+      [disabled]="cargando"
+      (click)="onLogin()"
+    >
+      {{ cargando ? 'Entrando...' : 'Entrar' }}
+    </ion-button>
+
+  </div>
+
+</ion-content>
