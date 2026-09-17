@@ -15,6 +15,7 @@ import {
   IonButton,
   IonIcon,
 } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-inicio',
@@ -39,17 +40,24 @@ import {
 })
 export class InicioPage implements OnInit {
 
-  // TODO: reemplazar con datos reales del endpoint del dashboard cuando exista
-  nombreUsuario = 'Demo';
+  // TODO: deudaTotal/clientesConDeuda/fiadosHoy/abonosHoy siguen fijos -
+  // reemplazar con datos reales cuando exista el endpoint del dashboard.
+  nombreUsuario = 'Usuario';
   deudaTotal = 8450.0;
   clientesConDeuda = 23;
   fiadosHoy = 4;
   abonosHoy = 620.0;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    // Aquí luego cargas los datos reales, ej: this.cargarResumen();
+    const usuario = this.authService.obtenerUsuarioActual();
+    if (usuario) {
+      this.nombreUsuario = usuario.nombre;
+    }
   }
 
   irANuevoFiado() {
@@ -65,9 +73,7 @@ export class InicioPage implements OnInit {
   }
 
   cerrarSesion() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario_id');
-    localStorage.removeItem('usuario_nombre');
+    this.authService.cerrarSesion();
     this.router.navigateByUrl('/login');
   }
 }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular';
-import { ApiService } from '../services/api.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +31,7 @@ export class LoginPage {
   errorMsg = signal('');
 
   constructor(
-    private apiService: ApiService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -47,13 +47,11 @@ export class LoginPage {
     this.cargando.set(true);
 
     try {
-      const response = await this.apiService.login(this.usuario, this.password);
+      const response = await this.authService.login(this.usuario, this.password);
 
       if (response.success && response.usuario) {
 
-        localStorage.setItem('token', response.token || '');
-        localStorage.setItem('usuario_id', String(response.usuario.id));
-        localStorage.setItem('usuario_nombre', response.usuario.nombre);
+        this.authService.guardarSesion(response.token || '', response.usuario);
 
         this.router.navigateByUrl('/tabs/inicio');
 

@@ -27,15 +27,34 @@
   </div>
 
   <ion-list *ngIf="!cargando() && clientes().length > 0">
-    <ion-item button *ngFor="let cliente of clientes()">
-      <ion-label>
-        <h2>{{ cliente.nombre }}</h2>
-        <p *ngIf="cliente.telefono">{{ cliente.telefono }}</p>
-      </ion-label>
-      <ion-note slot="end" [color]="cliente.saldo > 0 ? 'danger' : 'success'">
-        {{ cliente.saldo | currency:'MXN':'$' }}
-      </ion-note>
-    </ion-item>
+    <ion-item-sliding #slidingItem *ngFor="let cliente of clientes()">
+
+      <ion-item>
+        <ion-label>
+          <h2>{{ cliente.nombre }}</h2>
+          <p *ngIf="cliente.telefono">{{ cliente.telefono }}</p>
+        </ion-label>
+        <ion-note slot="end" [color]="cliente.saldo > 0 ? 'danger' : 'success'">
+          {{ cliente.saldo | currency:'MXN':'$' }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="abrirEditar(cliente, slidingItem)">
+          Editar
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="confirmarDesactivar(cliente, slidingItem)">
+          Desactivar
+        </ion-item-option>
+      </ion-item-options>
+
+    </ion-item-sliding>
   </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="abrirNuevoCliente()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>

@@ -12,8 +12,16 @@ import {
   IonLabel,
   IonNote,
   IonSpinner,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  AlertController,
 } from '@ionic/angular';
-import { ApiService, Cliente } from '../../services/api.service';
+import { ClientesService } from '../../services/clientes.service';
+import { Cliente } from '../../models/cliente.model';
 
 @Component({
   selector: 'app-clientes',
@@ -33,14 +41,18 @@ import { ApiService, Cliente } from '../../services/api.service';
     IonLabel,
     IonNote,
     IonSpinner,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    IonFab,
+    IonFabButton,
+    IonIcon,
   ],
 })
 export class ClientesPage implements OnInit {
 
-  // Signals en vez de propiedades sueltas: en un proyecto zoneless (sin zone.js,
-  // como este) son necesarios para que la vista se vuelva a pintar sola cuando
-  // el valor cambia después de un await. Con "this.clientes = ..." normal,
-  // el dato llega pero la pantalla nunca se entera de que debe actualizarse.
+  // Signals: en este proyecto zoneless (sin zone.js), son necesarios para que
+  // la vista se repinte sola cuando cambian después de un await.
   clientes = signal<Cliente[]>([]);
   cargando = signal(false);
   errorMsg = signal('');
@@ -49,11 +61,16 @@ export class ClientesPage implements OnInit {
 
   private temporizadorBusqueda?: ReturnType<typeof setTimeout>;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private clientesService: ClientesService,
+    private alertCtrl: AlertController
+  ) {}
 
   ngOnInit() {
     this.cargarClientes();
   }
+
+  // ---------- Read ----------
 
   // Se llama cada vez que el usuario escribe en el buscador
   buscar() {
@@ -69,7 +86,7 @@ export class ClientesPage implements OnInit {
     this.errorMsg.set('');
 
     try {
-      const respuesta = await this.apiService.getClientes(buscar);
+      const respuesta = await this.clientesService.getClientes(buscar);
 
       if (respuesta.success) {
         this.clientes.set(respuesta.clientes || []);
@@ -81,6 +98,138 @@ export class ClientesPage implements OnInit {
       this.errorMsg.set('Error al conectar con el servidor. Revisa que XAMPP esté prendido.');
     } finally {
       this.cargando.set(false);
+    }
+  }
+
+  // ---------- Create ----------
+
+  async abrirNuevoCliente() {
+    const alert = await this.alertCtrl.create({
+      header: 'Nuevo cliente',
+      inputs: [
+        { name: 'nombre', type: 'text', placeholder: 'Nombre (obligatorio)' },
+        { name: 'telefono', type: 'tel', placeholder: 'Teléfono (opcional)' },
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Crear',
+          handler: (data) => {
+            const nombre = (data.nombre || '').trim();
+            if (!nombre) {
+              return false; // no cierra el alert si falta el nombre
+            }
+            this.crearCliente(nombre, (data.telefono || '').trim());
+            return true;
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private async crearCliente(nombre: string, telefono: string) {
+    this.errorMsg.set('');
+
+    try {
+      const respuesta = await this.clientesService.crearCliente(nombre, telefono);
+
+      if (respuesta.success) {
+        this.cargarClientes(this.textoBusqueda);
+      } else {
+        this.errorMsg.set(respuesta.message || 'No se pudo crear el cliente');
+      }
+    } catch (error) {
+      console.error('Error al crear cliente:', error);
+      this.errorMsg.set('Error al conectar con el servidor.');
+    }
+  }
+
+  // ---------- Update ----------
+
+  async abrirEditar(cliente: Cliente, slidingItem: IonItemSliding) {
+    await slidingItem.close();
+
+    const alert = await this.alertCtrl.create({
+      header: 'Editar cliente',
+      inputs: [
+        { name: 'nombre', type: 'text', value: cliente.nombre, placeholder: 'Nombre' },
+        { name: 'telefono', type: 'tel', value: cliente.telefono || '', placeholder: 'Teléfono' },
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: (data) => {
+            const nombre = (data.nombre || '').trim();
+            if (!nombre) {
+              return false;
+            }
+            this.actualizarCliente(cliente.id, nombre, (data.telefono || '').trim());
+            return true;
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private async actualizarCliente(id: number, nombre: string, telefono: string) {
+    this.errorMsg.set('');
+
+    try {
+      const respuesta = await this.clientesService.actualizarCliente(id, nombre, telefono);
+
+      if (respuesta.success) {
+        this.cargarClientes(this.textoBusqueda);
+      } else {
+        this.errorMsg.set(respuesta.message || 'No se pudo actualizar el cliente');
+      }
+    } catch (error) {
+      console.error('Error al actualizar cliente:', error);
+      this.errorMsg.set('Error al conectar con el servidor.');
+    }
+  }
+
+  // ---------- "Delete" (solo desactiva, nunca borra) ----------
+
+  async confirmarDesactivar(cliente: Cliente, slidingItem: IonItemSliding) {
+    await slidingItem.close();
+
+    const alert = await this.alertCtrl.create({
+      header: 'Desactivar cliente',
+      message: `¿Seguro que quieres desactivar a ${cliente.nombre}? Ya no aparecerá en la lista, pero su historial se conserva.`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Desactivar',
+          role: 'destructive',
+          handler: () => {
+            this.desactivarCliente(cliente.id);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private async desactivarCliente(id: number) {
+    this.errorMsg.set('');
+
+    try {
+      const respuesta = await this.clientesService.desactivarCliente(id);
+
+      if (respuesta.success) {
+        this.cargarClientes(this.textoBusqueda);
+      } else {
+        this.errorMsg.set(respuesta.message || 'No se pudo desactivar el cliente');
+      }
+    } catch (error) {
+      console.error('Error al desactivar cliente:', error);
+      this.errorMsg.set('Error al conectar con el servidor.');
     }
   }
 }
