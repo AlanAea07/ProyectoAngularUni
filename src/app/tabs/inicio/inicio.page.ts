@@ -72,8 +72,13 @@ export class InicioPage implements OnInit {
     this.router.navigateByUrl('/pagos');
   }
 
-  cerrarSesion() {
-    this.authService.cerrarSesion();
-    this.router.navigateByUrl('/login');
-  }
+cerrarSesion() {
+  console.log('CLICK EN CERRAR SESIÓN');
+
+  this.authService.cerrarSesion();
+
+  this.router.navigateByUrl('/login', {
+    replaceUrl: true
+  });
+}
 }
