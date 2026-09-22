@@ -24,12 +24,15 @@
       <ion-card-content class="resumen-cliente">
         <p class="label">Saldo actual</p>
         <h1 [class.deuda]="c.saldo > 0">{{ c.saldo | currency:'MXN':'$' }}</h1>
+        <p><span class="debt-badge" [attr.data-color]="c.color_deuda">Saldo · {{c.color_deuda}}</span></p>
+        <p>Crédito disponible: {{c.credito_disponible | currency:'MXN':'$'}} de {{c.limite_credito | currency:'MXN':'$'}}</p>
+        <p class="age-warning" *ngIf="c.alerta_antiguedad">◷ {{c.dias_sin_abono}} días sin abonar. Solo informativo.</p>
         <p class="telefono" *ngIf="c.telefono">{{ c.telefono }}</p>
       </ion-card-content>
     </ion-card>
 
     <div class="acciones">
-      <ion-button expand="block" size="large" [disabled]="!c.activo" (click)="irARegistrarFiado()">
+      <ion-button expand="block" size="large" [disabled]="!c.activo || c.credito_disponible === 0" (click)="irARegistrarFiado()">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         Nuevo fiado
       </ion-button>
@@ -37,6 +40,10 @@
       <ion-button expand="block" fill="outline" [disabled]="c.saldo <= 0" (click)="irAPago(true)">Liquidar deuda</ion-button>
     </div>
 
+    <ng-container *ngIf="c.seguimiento?.length">
+      <h2 class="titulo-historial">Registro de seguimiento</h2>
+      <ion-list><ion-item *ngFor="let a of c.seguimiento"><ion-label><h3>{{a.fecha | date:'dd/MM/yyyy'}} · {{a.dias_sin_abono}} días sin abonar</h3><p>Saldo al cierre: {{a.saldo | currency:'MXN':'$'}}</p></ion-label></ion-item></ion-list>
+    </ng-container>
     <h2 class="titulo-historial">Historial de movimientos</h2>
 
     <div class="estado" *ngIf="fiados().length === 0">

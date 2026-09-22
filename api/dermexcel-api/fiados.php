@@ -1,5 +1,6 @@
 <?php
 require_once "config.php";
+require_once "credito.php";
 
 $usuarioActual = requireAuth($pdo);
 requireRole($usuarioActual, ['admin', 'vendedor']);
@@ -82,15 +83,17 @@ if ($metodo === 'POST') {
         exit();
     }
 
-    // El cliente debe existir, estar activo y ser de este mismo negocio.
-    $stmt = $pdo->prepare(
-        "SELECT id FROM clientes WHERE id = :id AND negocio_id = :negocio_id AND activo = 1"
-    );
-    $stmt->execute(["id" => $clienteId, "negocio_id" => $negocioId]);
-    if (!$stmt->fetch()) {
-        http_response_code(404);
-        echo json_encode(["success" => false, "message" => "Cliente no encontrado"]);
-        exit();
+    try {
+    $pdo->beginTransaction();
+    $config = configuracionNegocio($pdo, (int)$negocioId, true);
+    // Mismo bloqueo de cliente que pagos: el límite se verifica sobre el saldo vigente.
+    $stmt = $pdo->prepare('SELECT id,saldo FROM clientes WHERE id=? AND negocio_id=? AND activo=1 FOR UPDATE');
+    $stmt->execute([$clienteId,$negocioId]);
+    $cliente=$stmt->fetch();
+    if (!$cliente) { $pdo->rollBack(); http_response_code(404); exit(json_encode(['success'=>false,'message'=>'Cliente no encontrado'])); }
+    if ((int)round((float)$cliente['saldo']*100) + (int)round((float)$monto*100) > (int)round($config['limite_credito']*100)) {
+        $pdo->rollBack(); http_response_code(409);
+        exit(json_encode(['success'=>false,'message'=>'Este fiado supera el límite de crédito del cliente. Disponible: $'.number_format(max(0,$config['limite_credito']-$cliente['saldo']),2)]));
     }
 
     $stmt = $pdo->prepare(
@@ -114,6 +117,7 @@ if ($metodo === 'POST') {
     $stmt->execute(["id" => $clienteId]);
     $saldoActual = (float) $stmt->fetchColumn();
 
+    $pdo->commit();
     echo json_encode([
         "success" => true,
         "fiado" => [
@@ -125,6 +129,10 @@ if ($metodo === 'POST') {
         ],
         "saldo_actualizado" => $saldoActual,
     ]);
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack(); error_log($e->getMessage());
+        http_response_code(500); echo json_encode(['success'=>false,'message'=>'No se pudo registrar el fiado.']);
+    }
     exit();
 }
 

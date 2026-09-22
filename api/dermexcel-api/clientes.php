@@ -1,5 +1,6 @@
 <?php
 require_once "config.php";
+require_once "credito.php";
 
 $usuarioActual = requireAuth($pdo);
 requireRole($usuarioActual, ['admin', 'vendedor']);
@@ -13,64 +14,16 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 // GET /clientes.php?id=5           -> un solo cliente (para cliente-detalle)
 // ============================================================
 if ($metodo === 'GET') {
-
-    $id = (int) ($_GET['id'] ?? 0);
-
+    $id = (int)($_GET['id'] ?? 0);
+    $rows = clientesConCredito($pdo, (int)$negocioId, $id, trim($_GET['buscar'] ?? ''));
     if ($id > 0) {
-        $stmt = $pdo->prepare(
-            "SELECT id, nombre, telefono, saldo, activo
-             FROM clientes
-             WHERE id = :id AND negocio_id = :negocio_id
-             LIMIT 1"
-        );
-        $stmt->execute(["id" => $id, "negocio_id" => $negocioId]);
-        $cliente = $stmt->fetch();
-
-        if (!$cliente) {
-            http_response_code(404);
-            echo json_encode(["success" => false, "message" => "Cliente no encontrado"]);
-            exit();
-        }
-
-        $cliente['saldo'] = (float) $cliente['saldo'];
-        $cliente['activo'] = (bool) $cliente['activo'];
-
-        echo json_encode(["success" => true, "cliente" => $cliente]);
-        exit();
-    }
-
-    $buscar = trim($_GET['buscar'] ?? '');
-
-    if ($buscar !== '') {
-        $stmt = $pdo->prepare(
-            "SELECT id, nombre, telefono, saldo, activo
-             FROM clientes
-             WHERE negocio_id = :negocio_id AND activo = 1 AND nombre LIKE :buscar
-             ORDER BY nombre ASC"
-        );
-        $stmt->execute(["negocio_id" => $negocioId, "buscar" => "%$buscar%"]);
-    } else {
-        $stmt = $pdo->prepare(
-            "SELECT id, nombre, telefono, saldo, activo
-             FROM clientes
-             WHERE negocio_id = :negocio_id AND activo = 1
-             ORDER BY nombre ASC"
-        );
-        $stmt->execute(["negocio_id" => $negocioId]);
-    }
-
-    $clientes = $stmt->fetchAll();
-
-    foreach ($clientes as &$c) {
-        $c['saldo'] = (float) $c['saldo'];
-        $c['activo'] = (bool) $c['activo'];
-    }
-
-    echo json_encode([
-        "success"  => true,
-        "clientes" => $clientes
-    ]);
-    exit();
+        if (!$rows) { http_response_code(404); exit(json_encode(['success'=>false,'message'=>'Cliente no encontrado'])); }
+        $q=$pdo->prepare('SELECT fecha,dias_sin_abono,saldo,referencia_desde FROM seguimiento_deuda WHERE negocio_id=? AND cliente_id=? ORDER BY fecha DESC LIMIT 30');
+        $q->execute([$negocioId,$id]);
+        $rows[0]['seguimiento']=$q->fetchAll();
+        echo json_encode(['success'=>true,'cliente'=>$rows[0]]);
+    } else { echo json_encode(['success'=>true,'clientes'=>$rows]); }
+    exit;
 }
 
 // ============================================================

@@ -49,6 +49,10 @@ export class InicioPage implements OnInit {
   clientesConDeuda = signal(0);
   fiadosHoy = signal(0);
   abonosHoy = signal(0);
+  montoFiadosHoy = signal(0);
+  cantidadAbonosHoy = signal(0);
+  fechaDashboard = signal('');
+  esAdmin = false;
   error = signal('');
   cargando = signal(false);
 
@@ -61,6 +65,9 @@ export class InicioPage implements OnInit {
       this.clientesConDeuda.set(Number(resumen.clientes_con_deuda));
       this.fiadosHoy.set(resumen.fiados_hoy);
       this.abonosHoy.set(resumen.abonos_hoy);
+      this.montoFiadosHoy.set(resumen.fiados_monto);
+      this.cantidadAbonosHoy.set(resumen.abonos_cantidad);
+      this.fechaDashboard.set(resumen.fecha);
     } catch { this.error.set('No se pudo cargar el resumen.'); }
     finally { this.cargando.set(false); }
   }
@@ -72,6 +79,7 @@ export class InicioPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.esAdmin = this.authService.esAdmin();
     const usuario = this.authService.obtenerUsuarioActual();
     if (usuario) {
       this.nombreUsuario = usuario.nombre;
@@ -79,6 +87,9 @@ export class InicioPage implements OnInit {
       this.negocioNombre = usuario.negocioNombre;
     }
   }
+
+  irAReportes() { void this.router.navigateByUrl('/tabs/reportes'); }
+  irAAjustes() { void this.router.navigateByUrl('/tabs/settings'); }
 
   irANuevoFiado() {
     // Un fiado siempre es de un cliente específico: mandamos a elegirlo primero.

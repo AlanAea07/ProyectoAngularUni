@@ -12,6 +12,8 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <div class="page-intro"><p class="eyebrow">MI TIENDA</p><h2>Tus clientes</h2><p>Personas de confianza, cuentas bien cuidadas.</p></div>
+
 
   <div class="estado" *ngIf="cargando()">
     <ion-spinner></ion-spinner>
@@ -32,9 +34,11 @@
       <ion-item button (click)="abrirDetalle(cliente)">
         <ion-label>
           <h2>{{ cliente.nombre }}</h2>
+          <span class="debt-badge" [attr.data-color]="cliente.color_deuda">Saldo · {{cliente.color_deuda}}</span>
+          <p class="age-warning" *ngIf="cliente.alerta_antiguedad">◷ {{cliente.dias_sin_abono}} días sin abonar</p>
           <p *ngIf="cliente.telefono">{{ cliente.telefono }}</p>
         </ion-label>
-        <ion-note slot="end" [color]="cliente.saldo > 0 ? 'danger' : 'success'">
+        <ion-note slot="end" [attr.data-color]="cliente.color_deuda" class="debt-amount">
           {{ cliente.saldo | currency:'MXN':'$' }}
         </ion-note>
       </ion-item>

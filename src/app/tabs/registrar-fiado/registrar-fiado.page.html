@@ -8,13 +8,19 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
+  <div class="transaction-wrap">
 
   <p class="nombre-cliente" *ngIf="cliente() as c">Para: <strong>{{ c.nombre }}</strong></p>
 
+  <p *ngIf="cliente() as c">Disponible: <strong>{{c.credito_disponible | currency:'MXN':'$'}}</strong> · Límite: {{c.limite_credito | currency:'MXN':'$'}}</p>
+  <p class="age-warning" *ngIf="cliente()?.alerta_antiguedad">◷ {{cliente()?.dias_sin_abono}} días sin abonar. Esto no bloquea el fiado.</p>
   <ion-item>
     <ion-label position="stacked">Monto *</ion-label>
     <ion-input
       type="number"
+      [max]="cliente()?.credito_disponible ?? 0"
+      min="0.01"
+      step="0.01"
       inputmode="decimal"
       placeholder="0.00"
       [(ngModel)]="monto"
@@ -38,9 +44,10 @@
     Este fiado quedará guardado en el historial del cliente y no se podrá editar ni borrar después.
   </ion-note>
 
-  <ion-button expand="block" size="large" class="boton-guardar" (click)="guardar()" [disabled]="guardando() || !cliente()?.activo">
+  <ion-button expand="block" size="large" class="boton-guardar" (click)="guardar()" [disabled]="guardando() || !cliente()?.activo || cliente()?.credito_disponible === 0">
     <ion-spinner *ngIf="guardando()" name="crescent"></ion-spinner>
     <span *ngIf="!guardando()">Registrar fiado</span>
   </ion-button>
 
+  </div>
 </ion-content>

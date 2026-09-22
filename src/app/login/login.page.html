@@ -1,9 +1,13 @@
 <ion-content [fullscreen]="true" class="login-content">
 
+  <div class="login-shell">
+  <div class="login-brand"><span class="brand-mark" aria-hidden="true">F</span><span>FiadOS <small>Tu libreta, en orden.</small></span></div>
   <div class="login-wrap">
+    <div class="store-front" aria-hidden="true"><div class="awning"></div><div class="store-window"></div><div class="store-door"></div></div>
+    <p class="eyebrow">CERCA DE TU NEGOCIO</p>
 
-    <h1 class="login-title">Dermexcel</h1>
-    <p class="login-subtitle">Inicia sesión para continuar</p>
+    <h1 class="login-title">Qué bueno verte.</h1>
+    <p class="login-subtitle">Entra para llevar las cuentas de tu tienda con tranquilidad.</p>
 
     <ion-item class="login-input">
       <ion-label position="floating">Usuario</ion-label>
@@ -32,9 +36,10 @@
       [disabled]="cargando()"
       (click)="onLogin()"
     >
-      {{ cargando() ? 'Entrando...' : 'Entrar' }}
+      {{ cargando() ? 'Entrando...' : 'Entrar a mi tienda' }}
     </ion-button>
 
   </div>
-
+  <p class="login-footer">Las cuentas claras. La confianza de siempre.</p>
+  </div>
 </ion-content>

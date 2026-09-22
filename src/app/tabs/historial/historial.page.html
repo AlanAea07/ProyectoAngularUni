@@ -1,5 +1,7 @@
 <ion-header><ion-toolbar><ion-title>Historial</ion-title></ion-toolbar></ion-header>
 <ion-content>
+  <div class="page-intro"><p class="eyebrow">MI TIENDA</p><h2>Cada movimiento cuenta</h2><p>Consulta los fiados y pagos de tu tienda.</p></div>
+
   <ion-searchbar placeholder="Buscar cliente, fiado o pago" [value]="busqueda()" (ionInput)="busqueda.set($event.detail.value || '')"></ion-searchbar>
   <ion-spinner *ngIf="cargando()"></ion-spinner>
   <p class="ion-padding" role="alert" *ngIf="error()">{{ error() }} <ion-button (click)="ionViewWillEnter()">Reintentar</ion-button></p>

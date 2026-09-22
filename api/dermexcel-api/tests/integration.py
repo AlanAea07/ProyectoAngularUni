@@ -10,7 +10,7 @@ DB = 'fiados_saas_test_20260921'
 BASE = 'http://localhost:8089/'
 
 def sql(query):
-    return subprocess.check_output([MYSQL, '-u', 'root', DB, '-N', '-e', query], text=True).strip()
+    return subprocess.check_output([MYSQL, '-u', 'root', '--default-character-set=utf8mb4', DB, '-N'], input=query, encoding='utf-8').strip()
 
 def request(path, body=None, token=None, status=200):
     headers = {'Content-Type': 'application/json'}

@@ -9,6 +9,7 @@ export interface Movimiento {
   metodo_pago: 'efectivo' | 'transferencia' | null;
 }
 export interface Resumen {
+  fecha: string; zona_horaria: string; fiados_monto: number; abonos_cantidad: number;
   deuda_total: number; clientes_con_deuda: number; fiados_hoy: number; abonos_hoy: number;
 }
 @Injectable({providedIn: 'root'})
@@ -19,7 +20,7 @@ export class MovimientosService {
       `${environment.apiUrl}/historial.php${clienteId ? '?cliente_id=' + clienteId : ''}`));
   }
   resumen() {
-    return firstValueFrom(this.http.get<{success: boolean; resumen: Resumen}>(`${environment.apiUrl}/resumen.php`));
+    return firstValueFrom(this.http.get<{success: boolean; resumen: Resumen}>(`${environment.apiUrl}/dashboard.php`));
   }
   pagar(clienteId: number, monto: number, metodo: string, clave: string) {
     return firstValueFrom(this.http.post<{success: boolean; message?: string; saldo_actualizado: number}>(

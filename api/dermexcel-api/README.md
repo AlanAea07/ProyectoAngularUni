@@ -63,21 +63,12 @@
 3. Ejemplo, registrar un fiado → `POST http://localhost/dermexcel-api/fiados.php`, body:
    `{ "cliente_id": 1, "monto": 150, "detalle": "2 refrescos y pan" }`
 
-## 5. Siguiente etapa (pagos/abonos)
-
-- `POST /pagos.php` → registrar un abono/pago (misma lógica que fiados: solo
-  inserción, historial inmutable, resta del saldo vía trigger).
-- `POST /pagos_liquidar.php` → liquidar el saldo completo de un cliente en
-  un solo movimiento.
-- `GET /movimientos.php?cliente_id=5` → historial combinado (fiados + pagos)
-  ordenado por fecha, para la pantalla de detalle del cliente.
-
 ## Pagos, historial y resumen
 
 - `POST /pagos.php`: `{cliente_id, monto, metodo_pago, clave_operacion}`. Método: efectivo/transferencia. Clave: UUID nuevo para cada operación, el mismo para reintentos. No aceptar más de dos decimales ni montos superiores al saldo.
 - Una transacción bloquea la fila del cliente; el trigger existente descuenta el saldo. No restar otra vez desde PHP.
 - `GET /historial.php[?cliente_id=ID]`: fiados y pagos, incluidos movimientos de clientes inactivos.
-- `GET /resumen.php`: deuda total, clientes con deuda, fiados y abonos de hoy según fecha del servidor SQL.
+- `GET /resumen.php`: alias compatible de `dashboard.php`; fecha de Ciudad de México.
 - `POST /logout.php`: revoca el token actual. Las sesiones caducan a los siete días.
 - Las operaciones internas requieren admin/vendedor. El rol cliente está reservado y no puede consultar la cartera del negocio.
 - Pagos y fiados son registros de solo inserción; triggers impiden modificación y borrado.
@@ -86,3 +77,9 @@
 
 `tests/integration.py` usa exclusivamente `fiados_saas_test_20260921` y `http://localhost:8089`.
 Crear esa base vacía, copiar el esquema actualizado sin datos y arrancar PHP con `FIADOS_DB_NAME=fiados_saas_test_20260921` en el puerto 8089. Ejecutar el script con Python. Crea datos sintéticos en esa base y no toca la base principal.
+
+## Dashboard, crédito y reportes diarios
+
+Consultar `MEJORAS.md` para instalación de la migración 002, contratos de API,
+reglas de crédito, persistencia y programación del cierre. Aplicar también
+`migrations/002_dashboard_credito_reportes.sql` al instalar o actualizar.

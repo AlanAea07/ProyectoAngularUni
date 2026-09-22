@@ -1,7 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Inicio</ion-title>
+    <ion-title>FiadOS<span class="brand-caption"> · Mi tienda</span></ion-title>
     <ion-buttons slot="end">
+      <ion-button *ngIf="esAdmin" (click)="irAAjustes()">Ajustes</ion-button>
       <ion-button aria-label="Cerrar sesión" (click)="cerrarSesion()">
         <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
       </ion-button>
@@ -17,7 +18,9 @@
   </ion-header>
 
   <div class="saludo">
+    <p class="eyebrow">TU TIENDA, AL DÍA</p>
     <h2>Hola, {{ nombreUsuario }}</h2>
+    <p class="welcome-copy">Cada cuenta en su lugar.</p>
     <p class="negocio-rol" *ngIf="negocioNombre">{{ negocioNombre }} · {{ rolUsuario }}</p>
   </div>
 
@@ -26,8 +29,9 @@
   <p class="ion-padding" role="alert" *ngIf="error()">{{ error() }} <ion-button (click)="ionViewWillEnter()">Reintentar</ion-button></p>
   <ion-card *ngIf="!cargando() && !error()">
     <ion-card-content>
+      <p class="dashboard-date">Hoy · {{fechaDashboard() | date:'dd/MM/yyyy'}} · Ciudad de México</p>
       <div class="deuda-total">
-        <p class="label">Deuda total</p>
+        <p class="label">Total por cobrar</p>
         <h1>{{ deudaTotal() | currency:'MXN':'$' }}</h1>
       </div>
 
@@ -40,16 +44,19 @@
           <ion-col>
             <p class="valor">{{ fiadosHoy() }}</p>
             <p class="label">Fiados hoy</p>
+            <p class="dashboard-extra">{{montoFiadosHoy() | currency:'MXN':'$'}}</p>
           </ion-col>
           <ion-col>
             <p class="valor">{{ abonosHoy() | currency:'MXN':'$' }}</p>
             <p class="label">Abonos hoy</p>
+            <p class="dashboard-extra">{{cantidadAbonosHoy()}} abonos</p>
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-card-content>
   </ion-card>
 
+  <div class="section-heading"><h2>¿Qué hacemos hoy?</h2><p>Lo de todos los días, más fácil.</p></div>
   <!-- Accesos rápidos -->
   <div class="acciones">
     <ion-button expand="block" size="large" (click)="irANuevoFiado()">
@@ -67,4 +74,5 @@
       Pagos / Abonos
     </ion-button>
   </div>
+<div class="ion-padding"><ion-button expand="block" fill="outline" (click)="irAReportes()">Ver reportes diarios en PDF</ion-button></div>
 </ion-content>

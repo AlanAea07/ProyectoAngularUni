@@ -1,62 +1,21 @@
-.saludo {
-  padding: 16px 16px 0;
-
-  h2 {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .negocio-rol {
-    margin: 4px 0 0;
-    font-size: 13px;
-    color: var(--ion-color-medium);
-    text-transform: capitalize;
-  }
-}
-
-ion-card {
-  margin: 16px;
-  border-radius: 16px;
-}
-
-.deuda-total {
-  text-align: center;
-  margin-bottom: 12px;
-
-  .label {
-    margin: 0;
-    color: var(--ion-color-medium);
-    font-size: 14px;
-  }
-
-  h1 {
-    margin: 4px 0 0;
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--ion-color-danger);
-  }
-}
-
-.resumen-grid {
-  text-align: center;
-
-  .valor {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .label {
-    margin: 0;
-    font-size: 12px;
-    color: var(--ion-color-medium);
-  }
-}
-
-.acciones {
-  padding: 8px 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.brand-caption { font-size: 13px; color: #746966; font-weight: 500; }
+.saludo { padding: 32px 20px 12px; }
+.saludo h2 { margin: 0; font-size: clamp(25px, 5vw, 34px); font-weight: 750; letter-spacing: -1px; }
+.welcome-copy { margin: 8px 0 16px; color: #746966; font-size: 15px; }
+.negocio-rol { display: inline-block; margin: 0; padding: 7px 12px; background: #f1e8e3; border-radius: 9px; font-size: 12px; color: #6f5953; text-transform: capitalize; }
+ion-card { margin: 14px 16px 26px; }
+.deuda-total { padding: 6px 0 24px; border-bottom: 1px solid #eadfda; }
+.deuda-total .label { color: #746966; font-size: 14px; margin: 0 0 10px; }
+.deuda-total h1 { color: #a64145; font-size: clamp(38px, 9vw, 52px); line-height: 1.1; font-weight: 750; letter-spacing: -2px; margin: 0; }
+.resumen-grid { padding: 22px 0 0; }
+.resumen-grid ion-col { padding: 0 8px; }
+.resumen-grid ion-col:first-child { padding-left: 0; }
+.resumen-grid ion-col + ion-col { border-left: 1px solid #eadfda; }
+.valor { margin: 0 0 7px; font-size: 20px; font-weight: 750; color: #342c2b; }
+.resumen-grid .label { color: #746966; font-size: 11px; margin: 0; line-height: 1.5; }
+.section-heading { padding: 0 20px; }
+.section-heading h2 { margin: 0 0 6px; font-size: 19px; font-weight: 750; letter-spacing: -.4px; }
+.section-heading p { margin: 0; font-size: 13px; color: #746966; }
+.acciones { display: grid; gap: 10px; padding: 16px 16px 28px; }
+.acciones ion-button { margin: 0; min-height: 58px; font-size: 15px; }
+@media (min-width: 620px) { .acciones { grid-template-columns: repeat(3, 1fr); } }

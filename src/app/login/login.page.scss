@@ -1,39 +1,18 @@
-.login-content {
-  --background: #ae2fc7;
-}
-
-.login-wrap {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 100px 24px 24px;
-}
-
-.login-title {
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  margin-bottom: 4px;
-}
-
-.login-subtitle {
-  color: #777;
-  font-size: 14px;
-  margin-bottom: 32px;
-}
-
-.login-input {
-  margin-bottom: 12px;
-  --background: #626262;
-  border-radius: 8px;
-}
-
-.login-error {
-  color: #c0392b;
-  font-size: 13px;
-  margin: 8px 0 16px;
-}
-
-.login-btn {
-  margin-top: 12px;
-  --border-radius: 100px;
-}
+.login-content { --background: #faf7f4; }
+.login-shell { min-height: 100%; padding: max(32px, env(safe-area-inset-top)) 20px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; font-size: 24px; font-weight: 800; letter-spacing: -.8px; }
+.login-brand small { display: block; margin-top: 3px; font-size: 11px; font-weight: 500; letter-spacing: .3px; color: #746966; }
+.brand-mark { display: grid; place-items: center; width: 44px; height: 44px; background: #a64145; color: white; border-radius: 14px 14px 14px 4px; font-size: 27px; }
+.login-wrap { width: 100%; max-width: 440px; padding: 32px; border: 1px solid #eadfda; border-radius: 26px; background: white; box-shadow: 0 14px 50px #643a2c08; }
+.login-title { font-size: 30px; font-weight: 750; letter-spacing: -1px; margin: 0 0 12px; }
+.login-subtitle { color: #746966; font-size: 14px; line-height: 1.7; margin: 0 0 26px; max-width: 310px; }
+.login-input { margin-bottom: 14px; --background: #faf7f4; border: 1px solid #eadfda; border-radius: 14px; --min-height: 68px; }
+.login-input:focus-within { border-color: #a64145; }
+.login-btn { margin: 24px 0 0; min-height: 50px; }
+.login-error { color: #92393d; background: #faeae7; padding: 12px; border-radius: 10px; font-size: 13px; }
+.login-footer { text-align: center; font-size: 12px; color: #746966; margin: 24px 0 0; }
+.store-front { position: relative; width: 70px; height: 66px; margin: 0 0 24px; background: #fbefeb; border: 2px solid #d7b2ab; border-radius: 8px; }
+.awning { position: absolute; top: -2px; left: -7px; right: -7px; height: 23px; border-radius: 7px 7px 9px 9px; background: repeating-linear-gradient(90deg, #a64145 0 13px, #faeeea 13px 26px); border-bottom: 3px solid #92393d; }
+.store-window { position: absolute; left: 9px; bottom: 12px; width: 22px; height: 20px; background: white; border: 2px solid #d7b2ab; border-radius: 3px; }
+.store-door { position: absolute; right: 8px; bottom: 0; width: 17px; height: 29px; background: white; border: 2px solid #d7b2ab; border-bottom: 0; border-radius: 3px 3px 0 0; }
+@media (max-width: 380px) { .login-wrap { padding: 24px; } .login-title { font-size: 27px; } }

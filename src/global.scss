@@ -35,4 +35,120 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* La interfaz de la tienda mantiene su paleta clara también en modo oscuro del sistema. */
+
+app-login, app-tabs {
+  ion-toolbar {
+    --border-width: 0;
+    --min-height: 66px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+  ion-header { box-shadow: 0 1px 0 #eadfda; }
+  ion-title { font-size: 19px; font-weight: 750; letter-spacing: -.4px; }
+  ion-button {
+    min-height: 46px;
+    --border-radius: 14px;
+    --box-shadow: none;
+    font-weight: 650;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  ion-button[fill='outline'] {
+    --background: #ffffff;
+    --border-color: #dfc9c6;
+    --border-width: 1px;
+  }
+  ion-button:focus-visible { outline: 3px solid #a64145; outline-offset: 3px; border-radius: 14px; }
+  ion-card {
+    border: 1px solid #eadfda;
+    border-radius: 22px;
+    box-shadow: 0 6px 24px #57312606;
+    color: var(--ion-text-color);
+  }
+  ion-card-content { padding: 24px; }
+  ion-searchbar {
+    --background: #f3eeeb;
+    --border-radius: 14px;
+    --box-shadow: none;
+    --icon-color: #a64145;
+    --placeholder-color: #746966;
+    --placeholder-opacity: 1;
+    padding: 12px 16px;
+  }
+  ion-list {
+    background: transparent;
+    padding: 8px 16px 24px;
+  }
+  ion-list > ion-item, ion-item-sliding {
+    margin-bottom: 10px;
+    border: 1px solid #eadfda;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  ion-item {
+    --min-height: 78px;
+    --padding-start: 18px;
+    --inner-padding-end: 18px;
+    --border-width: 0;
+    --inner-border-width: 0;
+  }
+  ion-label h2, ion-label h3 { font-weight: 650 !important; }
+  ion-label p { color: #746966; line-height: 1.6; }
+  ion-note[slot='end'] { font-size: 16px; font-weight: 700; white-space: nowrap; }
+  ion-input, ion-textarea, ion-select { --highlight-color-focused: #a64145; }
+  ion-fab { margin: 0 8px 10px 0; }
+  ion-fab-button { --background: #a64145; --box-shadow: 0 6px 18px #a6414530; --border-radius: 18px; }
+  ion-tab-bar { height: 70px; --border: 1px solid #eadfda; padding-top: 5px; }
+  ion-tab-button {
+    --color: #82716d;
+    --color-selected: #a64145;
+    max-width: 200px;
+    font-size: 12px;
+    font-weight: 650;
+  }
+  ion-tab-button ion-icon { padding: 5px 20px; border-radius: 12px; font-size: 23px; }
+  ion-tab-button.tab-selected ion-icon { background: #f8eae7; }
+  p[role='alert'], .mensaje-error { padding: 14px; border-radius: 12px; background: #faeae7; color: #92393d; }
+  p[role='status'] { padding: 14px; border-radius: 12px; background: #eaf3ed; color: #316850; }
+  .page-intro { padding: 28px 20px 8px; }
+  .eyebrow { margin: 0 0 8px; color: #a64145; font-size: 11px; font-weight: 750; letter-spacing: 1.6px; text-transform: uppercase; }
+  .page-intro h2 { margin: 0 0 8px; font-size: 26px; font-weight: 750; letter-spacing: -.8px; }
+  .page-intro p:not(.eyebrow) { margin: 0; color: #746966; line-height: 1.6; font-size: 14px; }
+}
+
+app-tabs ion-content {
+  --padding-bottom: 24px;
+  @media (min-width: 850px) {
+    --padding-start: max(24px, calc((100% - 850px) / 2));
+    --padding-end: max(24px, calc((100% - 850px) / 2));
+  }
+}
+
+app-tabs .transaction-wrap {
+  max-width: 620px; margin: 20px auto; padding: 24px; background: #fff;
+  border: 1px solid #eadfda; border-radius: 22px;
+  h2 { font-size: 25px; font-weight: 750; letter-spacing: -.7px; }
+  h3 { font-size: 20px; color: #a64145; }
+  > p { font-size: 14px; color: #746966; line-height: 1.6; }
+  ion-item { border: 1px solid #eadfda; border-radius: 12px; margin-bottom: 14px; --background: #faf7f4; }
+  form > ion-input, form > ion-select { margin: 16px 0; padding: 12px 16px !important; border: 1px solid #eadfda; border-radius: 12px; background: #faf7f4; }
+  ion-list { padding: 8px 0; }
+  ion-searchbar { padding: 0 0 12px; }
+  @media (max-width: 400px) { padding: 18px; margin-top: 8px; }
+}
+
+/* Indicadores de crédito: color y texto, para no depender solo del color. */
+.debt-badge { display: inline-block; padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 700; margin-top: 5px; }
+[data-color='verde'] { --debt-ink: #276044; --debt-bg: #e9f4ec; }
+[data-color='amarillo'] { --debt-ink: #795800; --debt-bg: #fff4cf; }
+[data-color='naranja'] { --debt-ink: #9a491c; --debt-bg: #fff0e4; }
+[data-color='rojo'] { --debt-ink: #9a353b; --debt-bg: #fbe9e8; }
+.debt-badge { color: var(--debt-ink); background: var(--debt-bg); }
+.debt-amount { color: var(--debt-ink); }
+.age-warning { color: #8b451f !important; background: #fff1e1; padding: 8px 10px; border-radius: 9px; white-space: normal; font-size: 13px; line-height: 1.5; }
+.settings-range { padding: 14px; margin: 14px 0; border: 1px solid #eadfda; border-radius: 14px; }
+.settings-help, .audit-entry p { color: #746966; font-size: 13px; line-height: 1.7; }
+.audit-entry { padding: 16px 0; border-bottom: 1px solid #eadfda; font-size: 13px; }
+.dashboard-date { color: #746966; font-size: 12px; margin: 0 0 16px; }
+.dashboard-extra { color: #746966; font-size: 12px; margin: 6px 0 0; }

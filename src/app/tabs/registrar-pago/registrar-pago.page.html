@@ -3,6 +3,7 @@
   <ion-title>Registrar pago / abono</ion-title>
 </ion-toolbar></ion-header>
 <ion-content class="ion-padding">
+  <div class="transaction-wrap">
   <ion-spinner *ngIf="cargando()"></ion-spinner>
   <p role="alert" *ngIf="error()">{{ error() }}</p>
   <ion-button *ngIf="error() && !cliente()" (click)="ionViewWillEnter()">Reintentar</ion-button>
@@ -32,4 +33,5 @@
     </ng-container>
     <ion-button *ngIf="exito()" expand="block" (click)="verHistorial()">Ver saldo e historial</ion-button>
   </ng-container>
+  </div>
 </ion-content>

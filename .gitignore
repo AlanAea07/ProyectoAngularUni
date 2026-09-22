@@ -70,3 +70,7 @@ testem.log
 Thumbs.db
 
 .local-backup/
+
+api/dermexcel-api/reportes_runtime.php
+fiados-private/
+tmp/pdfs/

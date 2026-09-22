@@ -1,0 +1,28 @@
+<ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="/tabs/inicio"></ion-back-button></ion-buttons><ion-title>Ajustes del negocio</ion-title></ion-toolbar></ion-header>
+<ion-content class="ion-padding">
+  <div class="page-intro"><p class="eyebrow">ADMINISTRACIÓN</p><h2>Crédito a tu medida</h2><p>Los cambios se aplican a los clientes de este negocio y quedan registrados.</p></div>
+  <ion-spinner *ngIf="cargando()"></ion-spinner>
+  <p role="alert" *ngIf="error()">{{error()}}</p><p role="status" *ngIf="exito()">{{exito()}}</p>
+  <ion-button *ngIf="!config && error()" (click)="ionViewWillEnter()">Reintentar</ion-button>
+  <div class="transaction-wrap" *ngIf="!cargando() && config as c">
+    <form (ngSubmit)="guardar()">
+      <ion-input label="Deuda máxima por cliente (MXN)" labelPlacement="stacked" type="number" name="limite" min="0.01" step="0.01" [(ngModel)]="c.limite_credito" [disabled]="guardando()" required></ion-input>
+      <p class="settings-help">Un fiado puede llegar al máximo, pero no superarlo. Reducir el límite no altera las deudas existentes; restringe los fiados nuevos.</p>
+      <h3>Rangos de saldo</h3>
+      <p class="settings-help">Cada tramo incluye su monto superior. El siguiente empieza por encima de él.</p>
+      <div class="settings-range" *ngFor="let r of c.rangos; let i=index">
+        <span class="debt-badge" [attr.data-color]="r.color">Tramo {{i+1}}</span>
+        <ion-input *ngIf="i<4" [label]="'Hasta (MXN), tramo '+(i+1)" labelPlacement="stacked" type="number" [name]="'hasta'+i" min="0.01" step="0.01" [(ngModel)]="r.hasta" [disabled]="guardando()" required></ion-input>
+        <p *ngIf="i===4">Más de {{c.rangos[3].hasta | currency:'MXN':'$'}}</p>
+        <ion-select [label]="'Color del tramo '+(i+1)" [name]="'color'+i" [(ngModel)]="r.color" [disabled]="guardando()">
+          <ion-select-option value="verde">Verde</ion-select-option><ion-select-option value="amarillo">Amarillo</ion-select-option><ion-select-option value="naranja">Naranja</ion-select-option><ion-select-option value="rojo">Rojo</ion-select-option>
+        </ion-select>
+      </div>
+      <p class="settings-help">La alerta de más de 30 días sin abonar es informativa y no bloquea el crédito.</p>
+      <ion-button expand="block" type="submit" [disabled]="guardando()">{{guardando()?'Guardando…':'Guardar ajustes'}}</ion-button>
+    </form>
+  </div>
+  <div class="transaction-wrap" *ngIf="historial().length"><h3>Registro de cambios</h3>
+    <article class="audit-entry" *ngFor="let h of historial()"><strong>{{h.registrado_por}} · {{h.creado_en | date:'dd/MM/yyyy HH:mm'}}</strong><p>Antes: {{describir(h.anterior_json)}}</p><p>Después: {{describir(h.nuevo_json)}}</p></article>
+  </div>
+</ion-content>

@@ -1,0 +1,12 @@
+<ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="/tabs/inicio"></ion-back-button></ion-buttons><ion-title>Reportes diarios</ion-title></ion-toolbar></ion-header>
+<ion-content class="ion-padding">
+  <div class="page-intro"><p class="eyebrow">LAS CUENTAS DEL DÍA</p><h2>Tu cierre, en PDF</h2><p>Abonos y fiados en secciones separadas, con fecha, hora y saldo al corte.</p></div>
+  <div class="transaction-wrap"><p>Corte automático a las 11:00 p. m. Se completa después de medianoche con los movimientos restantes de la fecha. Hora de Ciudad de México.</p>
+    <ion-input label="Consultar fecha (opcional)" labelPlacement="stacked" type="date" [(ngModel)]="fecha" [max]="hoy"></ion-input>
+    <ion-button fill="outline" (click)="cargar()" [disabled]="cargando() || ocupado()">Consultar</ion-button>
+    <ion-button *ngIf="auth.esAdmin()" (click)="generar()" [disabled]="ocupado()">{{ocupado()?'Procesando…':'Generar / actualizar PDF'}}</ion-button>
+  </div>
+  <p role="alert" *ngIf="error()">{{error()}}</p><ion-spinner *ngIf="cargando()"></ion-spinner>
+  <p class="ion-padding" *ngIf="!cargando() && !error() && !filas().length">Todavía no hay reportes para mostrar. El primer cierre se genera automáticamente a las 11:00 p. m.</p>
+  <ion-list><ion-item *ngFor="let r of filas()"><ion-label class="ion-text-wrap"><h2>{{r.fecha}} · {{r.estado==='completo'?'Completo':'Provisional'}}</h2><p>Corte: {{r.corte | date:'dd/MM/yyyy HH:mm'}}</p><p>Actualizado: {{r.generado_en | date:'dd/MM/yyyy HH:mm'}} · Versión {{r.revision}}</p></ion-label><ion-button slot="end" fill="outline" (click)="descargar(r)" [disabled]="ocupado()">PDF</ion-button></ion-item></ion-list>
+</ion-content>

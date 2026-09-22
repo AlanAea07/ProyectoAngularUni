@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from '../services/admin.guard';
 import { TabsPage } from './tabs.page';
 
 export const tabsRoutes: Routes = [
@@ -6,6 +7,8 @@ export const tabsRoutes: Routes = [
     path: '',
     component: TabsPage,
     children: [
+      { path: 'settings', canActivate: [adminGuard], loadComponent: () => import('./settings/settings.page').then(m => m.SettingsPage) },
+      { path: 'reportes', loadComponent: () => import('./reportes/reportes.page').then(m => m.ReportesPage) },
       { path: 'registrar-pago', loadComponent: () => import('./registrar-pago/registrar-pago.page').then(m => m.RegistrarPagoPage) },
       { path: 'registrar-pago/:id', loadComponent: () => import('./registrar-pago/registrar-pago.page').then(m => m.RegistrarPagoPage) },
       {

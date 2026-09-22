@@ -86,6 +86,10 @@ export class RegistrarFiadoPage {
       return;
     }
 
+    if (this.monto > (this.cliente()?.credito_disponible ?? 0)) {
+      this.errorMsg.set('El monto supera el crédito disponible del cliente.');
+      return;
+    }
     this.guardando.set(true);
 
     try {
@@ -100,7 +104,7 @@ export class RegistrarFiadoPage {
       }
     } catch (error) {
       console.error('Error al registrar fiado:', error);
-      this.errorMsg.set('Error al conectar con el servidor.');
+      this.errorMsg.set((error as {error?:{message?:string}})?.error?.message || 'Error al conectar con el servidor.');
     } finally {
       this.guardando.set(false);
     }
