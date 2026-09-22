@@ -1,15 +1,16 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Historial</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Historial</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <!-- Aquí va la lista de todos los movimientos (fiados + abonos) con filtros -->
+<ion-header><ion-toolbar><ion-title>Historial</ion-title></ion-toolbar></ion-header>
+<ion-content>
+  <ion-searchbar placeholder="Buscar cliente, fiado o pago" [value]="busqueda()" (ionInput)="busqueda.set($event.detail.value || '')"></ion-searchbar>
+  <ion-spinner *ngIf="cargando()"></ion-spinner>
+  <p class="ion-padding" role="alert" *ngIf="error()">{{ error() }} <ion-button (click)="ionViewWillEnter()">Reintentar</ion-button></p>
+  <ng-container *ngIf="!cargando() && !error()">
+    <p class="ion-padding" *ngIf="!filtrados().length">No hay movimientos que mostrar.</p>
+    <ion-list><ion-item *ngFor="let m of filtrados()" [routerLink]="['/tabs/cliente-detalle', m.cliente_id]" button>
+      <ion-label><h2>{{ m.cliente_nombre }} · {{ m.tipo === 'fiado' ? 'Fiado' : 'Pago' }}</h2>
+        <p>{{ m.detalle || m.metodo_pago }}</p>
+        <p>{{ m.creado_en | date:'d MMM y, h:mm a' }} · {{ m.registrado_por }}</p>
+      </ion-label>
+      <ion-note slot="end" [color]="m.tipo === 'fiado' ? 'danger' : 'success'">{{ m.tipo === 'fiado' ? '+' : '−' }} {{ m.monto | currency:'MXN':'$' }}</ion-note>
+    </ion-item></ion-list>
+  </ng-container>
 </ion-content>

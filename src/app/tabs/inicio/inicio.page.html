@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="cerrarSesion()">
+      <ion-button aria-label="Cerrar sesión" (click)="cerrarSesion()">
         <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -18,28 +18,31 @@
 
   <div class="saludo">
     <h2>Hola, {{ nombreUsuario }}</h2>
+    <p class="negocio-rol" *ngIf="negocioNombre">{{ negocioNombre }} · {{ rolUsuario }}</p>
   </div>
 
   <!-- Resumen -->
-  <ion-card>
+  <p class="ion-padding" *ngIf="cargando()">Cargando resumen…</p>
+  <p class="ion-padding" role="alert" *ngIf="error()">{{ error() }} <ion-button (click)="ionViewWillEnter()">Reintentar</ion-button></p>
+  <ion-card *ngIf="!cargando() && !error()">
     <ion-card-content>
       <div class="deuda-total">
         <p class="label">Deuda total</p>
-        <h1>{{ deudaTotal | currency:'MXN':'$' }}</h1>
+        <h1>{{ deudaTotal() | currency:'MXN':'$' }}</h1>
       </div>
 
       <ion-grid class="resumen-grid">
         <ion-row>
           <ion-col>
-            <p class="valor">{{ clientesConDeuda }}</p>
+            <p class="valor">{{ clientesConDeuda() }}</p>
             <p class="label">Clientes con deuda</p>
           </ion-col>
           <ion-col>
-            <p class="valor">{{ fiadosHoy }}</p>
+            <p class="valor">{{ fiadosHoy() }}</p>
             <p class="label">Fiados hoy</p>
           </ion-col>
           <ion-col>
-            <p class="valor">{{ abonosHoy | currency:'MXN':'$' }}</p>
+            <p class="valor">{{ abonosHoy() | currency:'MXN':'$' }}</p>
             <p class="label">Abonos hoy</p>
           </ion-col>
         </ion-row>

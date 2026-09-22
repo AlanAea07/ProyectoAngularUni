@@ -1,0 +1,35 @@
+<ion-header><ion-toolbar>
+  <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/inicio"></ion-back-button></ion-buttons>
+  <ion-title>Registrar pago / abono</ion-title>
+</ion-toolbar></ion-header>
+<ion-content class="ion-padding">
+  <ion-spinner *ngIf="cargando()"></ion-spinner>
+  <p role="alert" *ngIf="error()">{{ error() }}</p>
+  <ion-button *ngIf="error() && !cliente()" (click)="ionViewWillEnter()">Reintentar</ion-button>
+  <ng-container *ngIf="!cargando() && !cliente()">
+    <ion-searchbar placeholder="Buscar por nombre o teléfono" [value]="busqueda()" (ionInput)="busqueda.set($event.detail.value || '')"></ion-searchbar>
+    <p>Selecciona el cliente que realiza el pago.</p>
+    <ion-list><ion-item button *ngFor="let c of filtrados()" (click)="seleccionar(c)">
+      <ion-label><h2>{{ c.nombre }}</h2><p>{{ c.telefono }}</p><p>Saldo: {{ c.saldo | currency:'MXN':'$' }}</p></ion-label>
+    </ion-item></ion-list>
+    <p *ngIf="!filtrados().length">No hay clientes que coincidan.</p>
+  </ng-container>
+  <ng-container *ngIf="cliente() as c">
+    <h2>{{ c.nombre }}</h2><h3>Saldo: {{ c.saldo | currency:'MXN':'$' }}</h3>
+    <p role="status" *ngIf="exito()">{{ exito() }}</p>
+    <ng-container *ngIf="!exito()">
+      <ion-button fill="clear" [disabled]="guardando()" (click)="cliente.set(null)">Cambiar cliente</ion-button>
+      <p *ngIf="c.saldo <= 0">Este cliente no tiene deuda pendiente.</p>
+      <form *ngIf="c.saldo > 0" (ngSubmit)="guardar()">
+        <ion-input label="Monto del pago" labelPlacement="stacked" name="monto" type="number" min="0.01" step="0.01" [max]="c.saldo" [(ngModel)]="monto" [disabled]="guardando()" required></ion-input>
+        <ion-select label="Método de pago" name="metodo" [(ngModel)]="metodo" [disabled]="guardando()">
+          <ion-select-option value="efectivo">Efectivo</ion-select-option>
+          <ion-select-option value="transferencia">Transferencia</ion-select-option>
+        </ion-select>
+        <ion-button fill="outline" type="button" [disabled]="guardando()" (click)="liquidar()">Usar saldo completo</ion-button>
+        <ion-button expand="block" type="submit" [disabled]="guardando()">{{ guardando() ? 'Registrando…' : 'Registrar pago' }}</ion-button>
+      </form>
+    </ng-container>
+    <ion-button *ngIf="exito()" expand="block" (click)="verHistorial()">Ver saldo e historial</ion-button>
+  </ng-container>
+</ion-content>

@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/cliente-detalle/{{ clienteId }}"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nuevo fiado</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <p class="nombre-cliente" *ngIf="cliente() as c">Para: <strong>{{ c.nombre }}</strong></p>
+
+  <ion-item>
+    <ion-label position="stacked">Monto *</ion-label>
+    <ion-input
+      type="number"
+      inputmode="decimal"
+      placeholder="0.00"
+      [(ngModel)]="monto"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Detalle (opcional)</ion-label>
+    <ion-textarea
+      placeholder="¿Qué se llevó? Ej. 2 refrescos y pan"
+      [(ngModel)]="detalle"
+      autoGrow="true"
+    ></ion-textarea>
+  </ion-item>
+
+  <ion-note color="danger" *ngIf="errorMsg()" class="mensaje-error">
+    {{ errorMsg() }}
+  </ion-note>
+
+  <ion-note class="aviso-historial">
+    Este fiado quedará guardado en el historial del cliente y no se podrá editar ni borrar después.
+  </ion-note>
+
+  <ion-button expand="block" size="large" class="boton-guardar" (click)="guardar()" [disabled]="guardando() || !cliente()?.activo">
+    <ion-spinner *ngIf="guardando()" name="crescent"></ion-spinner>
+    <span *ngIf="!guardando()">Registrar fiado</span>
+  </ion-button>
+
+</ion-content>

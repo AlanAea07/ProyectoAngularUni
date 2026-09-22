@@ -27,6 +27,13 @@ export class ClientesService {
     return firstValueFrom(this.http.get<ClientesResponse>(url));
   }
 
+  // ---- Read (uno solo, para cliente-detalle) ----
+  async getCliente(id: number): Promise<ClienteResponse> {
+    return firstValueFrom(
+      this.http.get<ClienteResponse>(`${this.baseUrl}/clientes.php?id=${id}`)
+    );
+  }
+
   // ---- Create ----
   async crearCliente(nombre: string, telefono?: string): Promise<ClienteResponse> {
     return firstValueFrom(

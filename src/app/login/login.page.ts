@@ -49,19 +49,20 @@ export class LoginPage {
     try {
       const response = await this.authService.login(this.usuario, this.password);
 
-      if (response.success && response.usuario) {
+      if (response.success && response.usuario && response.token) {
 
         this.authService.guardarSesion(response.token || '', response.usuario);
 
-        this.router.navigateByUrl('/tabs/inicio');
+        this.password = '';
+        this.router.navigateByUrl('/tabs/inicio', { replaceUrl: true });
 
       } else {
         this.errorMsg.set(response.message || 'No se pudo iniciar sesión');
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error de login:', error);
-      this.errorMsg.set('Error al conectar con el servidor. Revisa que XAMPP esté prendido.');
+      this.errorMsg.set((error as {error?: {message?: string}})?.error?.message || 'No se pudo conectar con el servidor.');
     } finally {
       this.cargando.set(false);
     }

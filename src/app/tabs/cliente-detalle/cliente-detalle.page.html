@@ -1,0 +1,60 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/clientes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ cliente()?.nombre || 'Cliente' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="estado" *ngIf="cargando()">
+    <ion-spinner></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+
+  <div class="estado" *ngIf="!cargando() && errorMsg()">
+    <p>{{ errorMsg() }}</p>
+  </div>
+
+  <ng-container *ngIf="!cargando() && cliente() as c">
+
+    <ion-card>
+      <ion-card-content class="resumen-cliente">
+        <p class="label">Saldo actual</p>
+        <h1 [class.deuda]="c.saldo > 0">{{ c.saldo | currency:'MXN':'$' }}</h1>
+        <p class="telefono" *ngIf="c.telefono">{{ c.telefono }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="acciones">
+      <ion-button expand="block" size="large" [disabled]="!c.activo" (click)="irARegistrarFiado()">
+        <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+        Nuevo fiado
+      </ion-button>
+      <ion-button expand="block" [disabled]="c.saldo <= 0" (click)="irAPago()">Registrar abono</ion-button>
+      <ion-button expand="block" fill="outline" [disabled]="c.saldo <= 0" (click)="irAPago(true)">Liquidar deuda</ion-button>
+    </div>
+
+    <h2 class="titulo-historial">Historial de movimientos</h2>
+
+    <div class="estado" *ngIf="fiados().length === 0">
+      <p>Este cliente todavía no tiene movimientos registrados.</p>
+    </div>
+
+    <ion-list *ngIf="fiados().length > 0">
+      <ion-item *ngFor="let f of fiados()">
+        <ion-label>
+          <h3>{{ f.tipo === 'fiado' ? 'Fiado' : 'Pago · ' + f.metodo_pago }} {{ f.detalle ? '— ' + f.detalle : '' }}</h3>
+          <p>{{ f.creado_en | date:'d MMM y, h:mm a' }} · Registró: {{ f.registrado_por }}</p>
+        </ion-label>
+        <ion-note slot="end" [color]="f.tipo === 'fiado' ? 'danger' : 'success'">
+          {{ f.tipo === 'fiado' ? '+' : '−' }} {{ f.monto | currency:'MXN':'$' }}
+        </ion-note>
+      </ion-item>
+    </ion-list>
+
+  </ng-container>
+
+</ion-content>

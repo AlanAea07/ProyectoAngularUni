@@ -1,0 +1,46 @@
+.estado {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--ion-color-medium);
+}
+
+ion-card {
+  margin: 16px;
+  border-radius: 16px;
+}
+
+.resumen-cliente {
+  text-align: center;
+
+  .label {
+    margin: 0;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+
+  h1 {
+    margin: 4px 0 0;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ion-color-success);
+
+    &.deuda {
+      color: var(--ion-color-danger);
+    }
+  }
+
+  .telefono {
+    margin: 8px 0 0;
+    color: var(--ion-color-medium);
+  }
+}
+
+.acciones {
+  padding: 0 16px 8px;
+}
+
+.titulo-historial {
+  padding: 16px 16px 4px;
+  font-size: 16px;
+  font-weight: 600;
+}

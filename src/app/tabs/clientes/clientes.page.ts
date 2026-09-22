@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -21,6 +22,7 @@ import {
   AlertController,
 } from '@ionic/angular';
 import { ClientesService } from '../../services/clientes.service';
+import { AuthService } from '../../services/auth.service';
 import { Cliente } from '../../models/cliente.model';
 
 @Component({
@@ -59,15 +61,31 @@ export class ClientesPage implements OnInit {
 
   textoBusqueda = '';
 
+  // Solo el admin puede editar/desactivar clientes ("cambios importantes");
+  // el vendedor solo puede crear clientes y registrar fiados.
+  esAdmin = false;
+
   private temporizadorBusqueda?: ReturnType<typeof setTimeout>;
 
   constructor(
     private clientesService: ClientesService,
+    private authService: AuthService,
+    private router: Router,
     private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
-    this.cargarClientes();
+    this.esAdmin = this.authService.esAdmin();
+
+  }
+
+  ionViewWillEnter() {
+    this.esAdmin = this.authService.esAdmin();
+    this.cargarClientes(this.textoBusqueda);
+  }
+
+  abrirDetalle(cliente: Cliente) {
+    this.router.navigateByUrl(`/tabs/cliente-detalle/${cliente.id}`);
   }
 
   // ---------- Read ----------

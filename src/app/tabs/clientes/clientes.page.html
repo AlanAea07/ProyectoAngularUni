@@ -29,7 +29,7 @@
   <ion-list *ngIf="!cargando() && clientes().length > 0">
     <ion-item-sliding #slidingItem *ngFor="let cliente of clientes()">
 
-      <ion-item>
+      <ion-item button (click)="abrirDetalle(cliente)">
         <ion-label>
           <h2>{{ cliente.nombre }}</h2>
           <p *ngIf="cliente.telefono">{{ cliente.telefono }}</p>
@@ -39,7 +39,7 @@
         </ion-note>
       </ion-item>
 
-      <ion-item-options side="end">
+      <ion-item-options side="end" *ngIf="esAdmin">
         <ion-item-option color="primary" (click)="abrirEditar(cliente, slidingItem)">
           Editar
         </ion-item-option>
@@ -52,7 +52,7 @@
   </ion-list>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="abrirNuevoCliente()">
+    <ion-fab-button aria-label="Registrar cliente" (click)="abrirNuevoCliente()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

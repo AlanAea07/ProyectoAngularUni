@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
@@ -15,6 +15,7 @@ import {
   IonButton,
   IonIcon,
 } from '@ionic/angular';
+import { MovimientosService } from '../../services/movimientos.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -40,16 +41,33 @@ import { AuthService } from '../../services/auth.service';
 })
 export class InicioPage implements OnInit {
 
-  // TODO: deudaTotal/clientesConDeuda/fiadosHoy/abonosHoy siguen fijos -
-  // reemplazar con datos reales cuando exista el endpoint del dashboard.
   nombreUsuario = 'Usuario';
-  deudaTotal = 8450.0;
-  clientesConDeuda = 23;
-  fiadosHoy = 4;
-  abonosHoy = 620.0;
+  rolUsuario = '';
+  negocioNombre = '';
+
+  deudaTotal = signal(0);
+  clientesConDeuda = signal(0);
+  fiadosHoy = signal(0);
+  abonosHoy = signal(0);
+  error = signal('');
+  cargando = signal(false);
+
+  async ionViewWillEnter() {
+    this.ngOnInit();
+    this.cargando.set(true); this.error.set('');
+    try {
+      const {resumen} = await this.movimientos.resumen();
+      this.deudaTotal.set(Number(resumen.deuda_total));
+      this.clientesConDeuda.set(Number(resumen.clientes_con_deuda));
+      this.fiadosHoy.set(resumen.fiados_hoy);
+      this.abonosHoy.set(resumen.abonos_hoy);
+    } catch { this.error.set('No se pudo cargar el resumen.'); }
+    finally { this.cargando.set(false); }
+  }
 
   constructor(
     private router: Router,
+    private movimientos: MovimientosService,
     private authService: AuthService
   ) {}
 
@@ -57,11 +75,14 @@ export class InicioPage implements OnInit {
     const usuario = this.authService.obtenerUsuarioActual();
     if (usuario) {
       this.nombreUsuario = usuario.nombre;
+      this.rolUsuario = usuario.rol;
+      this.negocioNombre = usuario.negocioNombre;
     }
   }
 
   irANuevoFiado() {
-    this.router.navigateByUrl('/nuevo-fiado');
+    // Un fiado siempre es de un cliente específico: mandamos a elegirlo primero.
+    this.router.navigateByUrl('/tabs/clientes');
   }
 
   irAClientes() {
@@ -69,16 +90,11 @@ export class InicioPage implements OnInit {
   }
 
   irAPagos() {
-    this.router.navigateByUrl('/pagos');
+    this.router.navigateByUrl('/tabs/registrar-pago');
   }
 
-cerrarSesion() {
-  console.log('CLICK EN CERRAR SESIÓN');
-
-  this.authService.cerrarSesion();
-
-  this.router.navigateByUrl('/login', {
-    replaceUrl: true
-  });
-}
+  async cerrarSesion() {
+    try { await this.authService.salir(); } catch { /* La sesión local se elimina incluso sin red. */ }
+    this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
 }
