@@ -17,6 +17,7 @@ import {
 } from '@ionic/angular';
 import { MovimientosService } from '../../services/movimientos.service';
 import { AuthService } from '../../services/auth.service';
+import { mensajeError } from '../../services/resiliencia.interceptor';
 
 @Component({
   selector: 'app-inicio',
@@ -68,7 +69,7 @@ export class InicioPage implements OnInit {
       this.montoFiadosHoy.set(resumen.fiados_monto);
       this.cantidadAbonosHoy.set(resumen.abonos_cantidad);
       this.fechaDashboard.set(resumen.fecha);
-    } catch { this.error.set('No se pudo cargar el resumen.'); }
+    } catch (error) { this.error.set(mensajeError(error)); }
     finally { this.cargando.set(false); }
   }
 

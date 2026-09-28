@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginResponse, RolUsuario, UsuarioLogueado } from '../models/usuario.model';
+import { CacheService } from './cache.service';
+import { ConexionService } from './conexion.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +13,7 @@ export class AuthService {
 
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cache: CacheService, private conexion: ConexionService) {}
 
   async login(usuario: string, password: string): Promise<LoginResponse> {
     return firstValueFrom(
@@ -25,6 +27,7 @@ export class AuthService {
   // TODO (tarea del profe): mover esto a Capacitor Preferences en vez de
   // localStorage, para que la sesión sobreviva cerrar/reabrir la app nativa.
   guardarSesion(token: string, usuario: UsuarioLogueado): void {
+    this.cache.limpiar(); this.conexion.limpiar();
     localStorage.setItem('token', token);
     localStorage.setItem('usuario_id', String(usuario.id));
     localStorage.setItem('usuario_nombre', usuario.nombre);
@@ -42,6 +45,7 @@ export class AuthService {
   }
 
   cerrarSesion(): void {
+    this.cache.limpiar(); this.conexion.limpiar();
     localStorage.removeItem('token');
     localStorage.removeItem('usuario_id');
     localStorage.removeItem('usuario_nombre');

@@ -20,6 +20,7 @@ import {
 import { ClientesService } from '../../services/clientes.service';
 import { FiadosService } from '../../services/fiados.service';
 import { Cliente } from '../../models/cliente.model';
+import { mensajeError } from '../../services/resiliencia.interceptor';
 
 @Component({
   selector: 'app-registrar-fiado',
@@ -72,7 +73,7 @@ export class RegistrarFiadoPage {
         this.cliente.set(resp.cliente || null);
       }
     } catch (error) {
-      this.errorMsg.set('No se pudo cargar el cliente. Regresa a Clientes e intenta de nuevo.');
+      this.errorMsg.set(mensajeError(error));
       console.error('Error al cargar cliente:', error);
     }
   }

@@ -21,6 +21,7 @@ import {
 import { ClientesService } from '../../services/clientes.service';
 import { MovimientosService, Movimiento } from '../../services/movimientos.service';
 import { Cliente } from '../../models/cliente.model';
+import { mensajeError } from '../../services/resiliencia.interceptor';
 
 
 @Component({
@@ -96,7 +97,7 @@ export class ClienteDetallePage implements OnInit {
       }
     } catch (error) {
       console.error('Error al cargar detalle de cliente:', error);
-      this.errorMsg.set('Error al conectar con el servidor.');
+      this.errorMsg.set(mensajeError(error));
     } finally {
       this.cargando.set(false);
     }

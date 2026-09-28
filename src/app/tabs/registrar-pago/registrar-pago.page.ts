@@ -7,6 +7,7 @@ import { IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent,
 import { ClientesService } from '../../services/clientes.service';
 import { MovimientosService } from '../../services/movimientos.service';
 import { Cliente } from '../../models/cliente.model';
+import { mensajeError } from '../../services/resiliencia.interceptor';
 
 @Component({
   selector: 'app-registrar-pago', standalone: true, templateUrl: './registrar-pago.page.html',
@@ -44,7 +45,7 @@ export class RegistrarPagoPage {
         this.seleccionar(detalle.cliente!);
         if (this.route.snapshot.queryParamMap.get('liquidar') === '1') this.liquidar();
       }
-    } catch { this.error.set('No se pudieron cargar los clientes. Intenta de nuevo.'); }
+    } catch (error) { this.error.set(mensajeError(error)); }
     finally { this.cargando.set(false); }
   }
   seleccionar(cliente: Cliente) {

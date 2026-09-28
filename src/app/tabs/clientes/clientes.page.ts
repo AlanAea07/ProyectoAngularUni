@@ -24,6 +24,7 @@ import {
 import { ClientesService } from '../../services/clientes.service';
 import { AuthService } from '../../services/auth.service';
 import { Cliente } from '../../models/cliente.model';
+import { mensajeError } from '../../services/resiliencia.interceptor';
 
 @Component({
   selector: 'app-clientes',
@@ -113,7 +114,7 @@ export class ClientesPage implements OnInit {
       }
     } catch (error) {
       console.error('Error al cargar clientes:', error);
-      this.errorMsg.set('Error al conectar con el servidor. Revisa que XAMPP esté prendido.');
+      this.errorMsg.set(mensajeError(error));
     } finally {
       this.cargando.set(false);
     }
@@ -160,7 +161,7 @@ export class ClientesPage implements OnInit {
       }
     } catch (error) {
       console.error('Error al crear cliente:', error);
-      this.errorMsg.set('Error al conectar con el servidor.');
+      this.errorMsg.set(mensajeError(error));
     }
   }
 
@@ -207,7 +208,7 @@ export class ClientesPage implements OnInit {
       }
     } catch (error) {
       console.error('Error al actualizar cliente:', error);
-      this.errorMsg.set('Error al conectar con el servidor.');
+      this.errorMsg.set(mensajeError(error));
     }
   }
 
@@ -247,7 +248,7 @@ export class ClientesPage implements OnInit {
       }
     } catch (error) {
       console.error('Error al desactivar cliente:', error);
-      this.errorMsg.set('Error al conectar con el servidor.');
+      this.errorMsg.set(mensajeError(error));
     }
   }
 }
