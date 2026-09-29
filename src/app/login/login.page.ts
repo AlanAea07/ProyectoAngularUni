@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { ServidorService } from '../services/servidor.service';
+import { ApiClient } from '../services/api-client.service';
+import { mensajeError } from '../services/resiliencia.interceptor';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +27,9 @@ export class LoginPage {
 
   usuario: string = '';
   password: string = '';
+  origen = '';
+  comprobando = signal(false);
+  conexionMsg = signal('');
 
   // Signals: en este proyecto zoneless (sin zone.js), son necesarios para que
   // la vista se repinte sola cuando cambian después de un await.
@@ -32,10 +38,24 @@ export class LoginPage {
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private servidor: ServidorService,
+    private api: ApiClient
+  ) { this.origen = servidor.apiUrl(); }
+
+  async comprobarServidor() {
+    if (this.cargando() || this.comprobando()) return;
+    this.comprobando.set(true); this.errorMsg.set(''); this.conexionMsg.set('');
+    try {
+      this.servidor.guardar(this.origen);
+      await this.api.get('estado.php');
+      this.conexionMsg.set('Conexión correcta con la API y la base de datos.');
+    } catch (error) { this.errorMsg.set(mensajeError(error)); }
+    finally { this.comprobando.set(false); }
+  }
 
   async onLogin(): Promise<void> {
+    if (this.cargando() || this.comprobando()) return;
 
     this.errorMsg.set('');
 
@@ -47,6 +67,7 @@ export class LoginPage {
     this.cargando.set(true);
 
     try {
+      this.servidor.guardar(this.origen);
       const response = await this.authService.login(this.usuario, this.password);
 
       if (response.success && response.usuario && response.token) {
@@ -62,7 +83,7 @@ export class LoginPage {
 
     } catch (error: unknown) {
       console.error('Error de login:', error);
-      this.errorMsg.set((error as {error?: {message?: string}})?.error?.message || 'No se pudo conectar con el servidor.');
+      this.errorMsg.set(mensajeError(error, 'No se pudo conectar con el servidor.'));
     } finally {
       this.cargando.set(false);
     }

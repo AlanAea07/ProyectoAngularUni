@@ -18,13 +18,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
 
 // -------- Datos de conexión (ajusta a tu XAMPP/servidor) --------
 $DB_HOST = "localhost";
+$DB_PORT = 3306;
 $DB_NAME = getenv("FIADOS_DB_NAME") ?: "fiados_saas";
 $DB_USER = "root";
 $DB_PASS = "";
 
 try {
     $pdo = new PDO(
-        "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4",
+        "mysql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;charset=utf8mb4",
         $DB_USER,
         $DB_PASS,
         [

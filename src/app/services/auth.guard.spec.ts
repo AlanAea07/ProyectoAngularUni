@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, provideRouter } from '@ang
 import { provideHttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { authGuard } from './auth.guard';
+import { ServidorService } from './servidor.service';
 
 describe('Protección de rutas privadas', () => {
   beforeEach(() => {
@@ -17,6 +18,7 @@ describe('Protección de rutas privadas', () => {
   });
   it('permite sesión y bloquea al cerrar, incluso si quedan URL en el historial', () => {
     localStorage.setItem('token', 'test-session');
+    localStorage.setItem('sesion_servidor', TestBed.inject(ServidorService).apiUrl());
     expect(comprobar()).toBe(true);
     TestBed.inject(AuthService).cerrarSesion();
     expect(String(comprobar())).toBe('/login');

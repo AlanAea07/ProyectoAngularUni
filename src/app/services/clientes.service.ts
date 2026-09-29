@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiClient } from './api-client.service';
 import { ClienteResponse, ClientesResponse } from '../models/cliente.model';
 
 export interface DesactivarResponse {
@@ -14,53 +12,44 @@ export interface DesactivarResponse {
 })
 export class ClientesService {
 
-  private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: ApiClient) {}
 
   // ---- Read ----
   async getClientes(buscar?: string): Promise<ClientesResponse> {
     const url = buscar
-      ? `${this.baseUrl}/clientes.php?buscar=${encodeURIComponent(buscar)}`
-      : `${this.baseUrl}/clientes.php`;
+      ? `clientes.php?buscar=${encodeURIComponent(buscar)}`
+      : `clientes.php`;
 
-    return firstValueFrom(this.http.get<ClientesResponse>(url));
+    return this.http.get<ClientesResponse>(url);
   }
 
   // ---- Read (uno solo, para cliente-detalle) ----
   async getCliente(id: number): Promise<ClienteResponse> {
-    return firstValueFrom(
-      this.http.get<ClienteResponse>(`${this.baseUrl}/clientes.php?id=${id}`)
-    );
+    return this.http.get<ClienteResponse>(`clientes.php?id=${id}`);
   }
 
   // ---- Create ----
   async crearCliente(nombre: string, telefono?: string): Promise<ClienteResponse> {
-    return firstValueFrom(
-      this.http.post<ClienteResponse>(`${this.baseUrl}/clientes.php`, {
+    return this.http.post<ClienteResponse>(`clientes.php`, {
         nombre,
         telefono: telefono || '',
-      })
-    );
+      });
   }
 
   // ---- Update ----
   async actualizarCliente(id: number, nombre: string, telefono?: string): Promise<ClienteResponse> {
-    return firstValueFrom(
-      this.http.post<ClienteResponse>(`${this.baseUrl}/clientes_actualizar.php`, {
+    return this.http.post<ClienteResponse>(`clientes_actualizar.php`, {
         id,
         nombre,
         telefono: telefono || '',
-      })
-    );
+      });
   }
 
   // ---- "Delete" (soft delete: solo desactiva, nunca borra) ----
   async desactivarCliente(id: number): Promise<DesactivarResponse> {
-    return firstValueFrom(
-      this.http.post<DesactivarResponse>(`${this.baseUrl}/clientes_desactivar.php`, {
+    return this.http.post<DesactivarResponse>(`clientes_desactivar.php`, {
         id,
-      })
-    );
+      });
   }
 }

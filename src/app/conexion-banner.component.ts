@@ -1,8 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../environments/environment';
+import { ApiClient } from './services/api-client.service';
+import { ServidorService } from './services/servidor.service';
 import { CacheService } from './services/cache.service';
 import { ConexionService } from './services/conexion.service';
 
@@ -11,6 +10,7 @@ import { ConexionService } from './services/conexion.service';
   template: `
     <aside aria-label="Estado de conexión" aria-live="polite" class="conexion" [class.aviso]="!conexion.redDisponible() || conexion.servidor() === 'inaccesible' || cantidad()">
       <span>{{ estado() }}</span>
+      <span>Origen: {{servidor.apiUrl()}}</span>
       @if (cantidad()) {
         <span>Consulta local · {{cantidad()}} consulta(s) con copia desde {{fecha() | date:'dd/MM/yyyy HH:mm'}}. Los saldos pueden estar desactualizados. Vuelve a abrir la pantalla para actualizarlos.</span>
       }
@@ -24,7 +24,8 @@ import { ConexionService } from './services/conexion.service';
 export class ConexionBannerComponent {
   conexion = inject(ConexionService);
   cache = inject(CacheService);
-  private http = inject(HttpClient);
+  servidor = inject(ServidorService);
+  private http = inject(ApiClient);
   comprobando = signal(false);
   cantidad = computed(() => Object.keys(this.conexion.copias()).length);
   fecha = computed(() => Math.min(...Object.values(this.conexion.copias())));
@@ -34,7 +35,7 @@ export class ConexionBannerComponent {
   async comprobar() {
     if (this.comprobando()) return;
     this.comprobando.set(true); this.conexion.mensaje.set('');
-    try { await firstValueFrom(this.http.get(`${environment.apiUrl}/estado.php`)); }
+    try { await this.http.get('estado.php'); }
     catch { /* El interceptor muestra el motivo. */ }
     finally { this.comprobando.set(false); }
   }

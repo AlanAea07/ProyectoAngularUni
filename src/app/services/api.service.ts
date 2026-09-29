@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiClient } from './api-client.service';
 
 export interface UsuarioLogueado {
   id: number;
@@ -34,24 +32,21 @@ export interface ClientesResponse {
 })
 export class ApiService {
 
-  private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: ApiClient) {}
 
   async login(usuario: string, password: string): Promise<LoginResponse> {
-    return firstValueFrom(
-      this.http.post<LoginResponse>(`${this.baseUrl}/login.php`, {
+    return this.http.post<LoginResponse>(`login.php`, {
         usuario,
         password,
-      })
-    );
+      });
   }
 
   async getClientes(buscar?: string): Promise<ClientesResponse> {
     const url = buscar
-      ? `${this.baseUrl}/clientes.php?buscar=${encodeURIComponent(buscar)}`
-      : `${this.baseUrl}/clientes.php`;
+      ? `clientes.php?buscar=${encodeURIComponent(buscar)}`
+      : `clientes.php`;
 
-    return firstValueFrom(this.http.get<ClientesResponse>(url));
+    return this.http.get<ClientesResponse>(url);
   }
 }

@@ -1,27 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiClient } from './api-client.service';
 import { LoginResponse, RolUsuario, UsuarioLogueado } from '../models/usuario.model';
 import { CacheService } from './cache.service';
 import { ConexionService } from './conexion.service';
+import { limpiarSesionLocal, ServidorService } from './servidor.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private cache: CacheService, private conexion: ConexionService) {}
+  constructor(private http: ApiClient, private cache: CacheService, private conexion: ConexionService, private servidor: ServidorService) {}
 
   async login(usuario: string, password: string): Promise<LoginResponse> {
-    return firstValueFrom(
-      this.http.post<LoginResponse>(`${this.baseUrl}/login.php`, {
+    return this.http.post<LoginResponse>(`login.php`, {
         usuario,
         password,
-      })
-    );
+      });
   }
 
   // TODO (tarea del profe): mover esto a Capacitor Preferences en vez de
@@ -29,6 +25,7 @@ export class AuthService {
   guardarSesion(token: string, usuario: UsuarioLogueado): void {
     this.cache.limpiar(); this.conexion.limpiar();
     localStorage.setItem('token', token);
+    localStorage.setItem('sesion_servidor', this.servidor.apiUrl());
     localStorage.setItem('usuario_id', String(usuario.id));
     localStorage.setItem('usuario_nombre', usuario.nombre);
     localStorage.setItem('usuario_rol', usuario.rol);
@@ -38,7 +35,7 @@ export class AuthService {
 
   async salir(): Promise<void> {
     try {
-      await firstValueFrom(this.http.post(`${this.baseUrl}/logout.php`, {}));
+      await this.http.post(`logout.php`, {});
     } finally {
       this.cerrarSesion();
     }
@@ -46,12 +43,7 @@ export class AuthService {
 
   cerrarSesion(): void {
     this.cache.limpiar(); this.conexion.limpiar();
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario_id');
-    localStorage.removeItem('usuario_nombre');
-    localStorage.removeItem('usuario_rol');
-    localStorage.removeItem('negocio_id');
-    localStorage.removeItem('negocio_nombre');
+    limpiarSesionLocal();
   }
 
   // Usado por el interceptor para pegarlo en cada request al API.
@@ -77,6 +69,6 @@ export class AuthService {
   }
 
   haySesionActiva(): boolean {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('token') && localStorage.getItem('sesion_servidor') === this.servidor.apiUrl();
   }
 }

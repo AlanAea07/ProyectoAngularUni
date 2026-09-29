@@ -8,6 +8,7 @@ import { ClientesService } from '../../services/clientes.service';
 import { MovimientosService } from '../../services/movimientos.service';
 import { Cliente } from '../../models/cliente.model';
 import { mensajeError } from '../../services/resiliencia.interceptor';
+import { nuevaClaveOperacion } from '../../services/clave-operacion';
 
 @Component({
   selector: 'app-registrar-pago', standalone: true, templateUrl: './registrar-pago.page.html',
@@ -34,7 +35,7 @@ export class RegistrarPagoPage {
 
   async ionViewWillEnter() {
     this.cliente.set(null); this.monto = null; this.error.set(''); this.exito.set('');
-    this.clave = crypto.randomUUID();
+    this.clave = nuevaClaveOperacion();
     this.cargando.set(true);
     try {
       const resp = await this.clientesService.getClientes();
@@ -50,7 +51,7 @@ export class RegistrarPagoPage {
   }
   seleccionar(cliente: Cliente) {
     this.cliente.set(cliente); this.monto = null; this.error.set(''); this.exito.set('');
-    this.clave = crypto.randomUUID();
+    this.clave = nuevaClaveOperacion();
   }
   liquidar() { this.monto = this.cliente()?.saldo || null; }
   async guardar() {

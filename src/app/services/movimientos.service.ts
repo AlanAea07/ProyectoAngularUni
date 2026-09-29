@@ -1,7 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiClient } from './api-client.service';
 
 export interface Movimiento {
   id: number; cliente_id: number; cliente_nombre: string; tipo: 'fiado' | 'pago';
@@ -14,16 +12,16 @@ export interface Resumen {
 }
 @Injectable({providedIn: 'root'})
 export class MovimientosService {
-  private http = inject(HttpClient);
+  private http = inject(ApiClient);
   historial(clienteId?: number) {
-    return firstValueFrom(this.http.get<{success: boolean; movimientos: Movimiento[]}>(
-      `${environment.apiUrl}/historial.php${clienteId ? '?cliente_id=' + clienteId : ''}`));
+    return this.http.get<{success: boolean; movimientos: Movimiento[]}>(
+      `historial.php${clienteId ? '?cliente_id=' + clienteId : ''}`);
   }
   resumen() {
-    return firstValueFrom(this.http.get<{success: boolean; resumen: Resumen}>(`${environment.apiUrl}/dashboard.php`));
+    return this.http.get<{success: boolean; resumen: Resumen}>(`dashboard.php`);
   }
   pagar(clienteId: number, monto: number, metodo: string, clave: string) {
-    return firstValueFrom(this.http.post<{success: boolean; message?: string; saldo_actualizado: number}>(
-      `${environment.apiUrl}/pagos.php`, {cliente_id: clienteId, monto, metodo_pago: metodo, clave_operacion: clave}));
+    return this.http.post<{success: boolean; message?: string; saldo_actualizado: number}>(
+      `pagos.php`, {cliente_id: clienteId, monto, metodo_pago: metodo, clave_operacion: clave});
   }
 }
