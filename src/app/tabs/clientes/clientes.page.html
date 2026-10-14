@@ -7,6 +7,7 @@
       placeholder="Buscar cliente..."
       [(ngModel)]="textoBusqueda"
       (ionInput)="buscar()"
+      [disabled]="guardando()"
     ></ion-searchbar>
   </ion-toolbar>
 </ion-header>
@@ -14,6 +15,10 @@
 <ion-content [fullscreen]="true">
   <div class="page-intro"><p class="eyebrow">MI TIENDA</p><h2>Tus clientes</h2><p>Personas de confianza, cuentas bien cuidadas.</p></div>
 
+
+  <div class="estado" role="status" aria-live="polite" *ngIf="guardando()">
+    <ion-spinner></ion-spinner><p>Guardando cambios...</p>
+  </div>
 
   <div class="estado" *ngIf="cargando()">
     <ion-spinner></ion-spinner>
@@ -31,7 +36,7 @@
   <ion-list *ngIf="!cargando() && clientes().length > 0">
     <ion-item-sliding #slidingItem *ngFor="let cliente of clientes()">
 
-      <ion-item button (click)="abrirDetalle(cliente)">
+      <ion-item button [disabled]="guardando()" (click)="abrirDetalle(cliente)">
         <ion-label>
           <h2>{{ cliente.nombre }}</h2>
           <span class="debt-badge" [attr.data-color]="cliente.color_deuda">Saldo · {{cliente.color_deuda}}</span>
@@ -43,11 +48,12 @@
         </ion-note>
       </ion-item>
 
+      <ion-item *ngIf="esAdmin">
+        <ion-button slot="end" fill="outline" [disabled]="guardando()" (click)="abrirEditar(cliente)">Editar nombre</ion-button>
+      </ion-item>
+
       <ion-item-options side="end" *ngIf="esAdmin">
-        <ion-item-option color="primary" (click)="abrirEditar(cliente, slidingItem)">
-          Editar
-        </ion-item-option>
-        <ion-item-option color="danger" (click)="confirmarDesactivar(cliente, slidingItem)">
+        <ion-item-option [disabled]="guardando()" color="danger" (click)="confirmarDesactivar(cliente, slidingItem)">
           Desactivar
         </ion-item-option>
       </ion-item-options>
@@ -56,7 +62,7 @@
   </ion-list>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button aria-label="Registrar cliente" (click)="abrirNuevoCliente()">
+    <ion-fab-button [disabled]="guardando()" aria-label="Registrar cliente" (click)="abrirNuevoCliente()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -17,9 +17,11 @@ export class ApiClient {
   private router = inject(Router);
   get<T>(ruta: string): Promise<T> { return this.request<T>('GET', ruta); }
   post<T>(ruta: string, data: unknown): Promise<T> { return this.request<T>('POST', ruta, data); }
+  patch<T>(ruta: string, data: unknown): Promise<T> { return this.request<T>('PATCH', ruta, data); }
+  delete<T>(ruta: string, data: unknown): Promise<T> { return this.request<T>('DELETE', ruta, data); }
   blob(ruta: string): Promise<Blob> { return this.request<Blob>('GET', ruta, undefined, true); }
 
-  private async request<T>(method: 'GET' | 'POST', ruta: string, data?: unknown, blob = false): Promise<T> {
+  private async request<T>(method: 'GET' | 'POST' | 'PATCH' | 'DELETE', ruta: string, data?: unknown, blob = false): Promise<T> {
     if (!/^[a-z_]+\.php(?:\?[^#]*)?$/.test(ruta)) throw new Error('Ruta de API no válida.');
     const base = this.servidor.apiUrl();
     const url = `${base}/${ruta}`;

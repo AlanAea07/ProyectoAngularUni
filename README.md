@@ -252,20 +252,41 @@ Las contraseñas de los usuarios se almacenarán utilizando hashes, nunca como t
 
 ## Estado del proyecto
 
-**En desarrollo**
+Implementado con Ionic Angular, servicios Angular y API PHP/MySQL.
 
-Actualmente se está construyendo la aplicación desde cero utilizando Ionic Angular para el frontend y PHP + MySQL para el backend.
+| Operación | Método | Endpoint |
+| --- | --- | --- |
+| Consultar clientes | GET | `clientes.php` |
+| Crear cliente | POST | `clientes.php` |
+| Editar únicamente el nombre (administrador) | PATCH | `clientes_actualizar.php` |
+| Desactivar conservando el historial (administrador) | DELETE | `clientes_desactivar.php` |
 
-El desarrollo se realizará por etapas, comenzando por:
+En Clientes, el administrador dispone del botón **Editar nombre**. La opción
+**Desactivar** aparece al deslizar el cliente. El saldo y el teléfono no se
+pueden modificar mediante la edición. La API valida el rol y rechaza campos
+adicionales; la desactivación conserva la fila, los fiados y los pagos.
 
-1. Autenticación.
-2. CRUD de clientes.
-3. Consulta del detalle de clientes.
-4. Registro de fiados.
-5. Registro de abonos.
-6. Liquidación de deudas.
-7. Historial de movimientos.
-8. Integración y pruebas generales.
+Las operaciones de clientes muestran carga y bloquean envíos repetidos mientras
+la solicitud y la actualización de la lista están pendientes. Los errores se
+muestran en pantalla y el bloqueo se libera al finalizar.
+
+### Ejecutar y comprobar
+
+1. Configurar PHP/MySQL siguiendo [la guía de la API](api/dermexcel-api/README.md).
+2. Ejecutar `npm ci` y `npm start`.
+3. Seleccionar la dirección del servidor en el login.
+4. Ejecutar `npm run build` y `npm test -- --watch=false`.
+
+Consultar también [conexión desde celular](docs/CONEXION_DESDE_CELULAR.md) y
+[Android](docs/ANDROID.md). Al actualizar esta versión, copiar los endpoints
+`clientes_actualizar.php`, `clientes_desactivar.php` y el cambio de CORS de
+`config.php` al servidor, conservando su configuración de conexión.
+
+### Evidencias de entrega
+
+Pendiente: agregar las capturas o el video de funcionamiento y sus enlaces aquí.
+Mostrar consultas, creación, edición como administrador, desactivación, carga y
+un error controlado; Network permite comprobar GET, POST, PATCH y DELETE.
 
 ## Propósito del proyecto
 

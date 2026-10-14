@@ -7,7 +7,7 @@ $negocioId = $usuarioActual['negocio_id'];
 // Desactivar (el "eliminar") es un "cambio importante" -> solo admin.
 requireRole($usuarioActual, ['admin']);
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
     http_response_code(405);
     echo json_encode(["success" => false, "message" => "Método no permitido"]);
     exit();

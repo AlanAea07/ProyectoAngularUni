@@ -84,6 +84,10 @@ describe('Servidor dinámico y Axios', () => {
     await antigua.getClientes(); await antigua.login('demo','demo');
     await TestBed.inject(ApiClient).get('estado.php'); await auth.salir();
     expect(solicitudes).toHaveLength(20);
+    const edicion = solicitudes.find(c => c.url?.endsWith('clientes_actualizar.php'));
+    expect(edicion?.method).toBe('patch');
+    expect(JSON.parse(edicion?.data)).toEqual({id: 7, nombre: 'Prueba'});
+    expect(solicitudes.find(c => c.url?.endsWith('clientes_desactivar.php'))?.method).toBe('delete');
     expect(solicitudes.every(c => c.url?.startsWith('http://192.168.0.222:8080/dermexcel-api/'))).toBe(true);
     expect(solicitudes.find(c => c.url?.includes('buscar='))?.url).toContain('Ana%20%26%20Luis');
     expect(solicitudes.find(c => c.url?.endsWith('pagos.php'))?.headers.get('Authorization')).toBe('Bearer nuevo');

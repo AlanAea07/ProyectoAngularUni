@@ -39,9 +39,9 @@
 - `GET /clientes.php?id=5` → un solo cliente (para la pantalla de detalle)
 - `POST /clientes.php` → crea un cliente — **vendedor y admin**
   → body: `{ "nombre", "telefono" }`
-- `POST /clientes_actualizar.php` → edita nombre/teléfono — **solo admin**
-  → body: `{ "id", "nombre", "telefono" }`
-- `POST /clientes_desactivar.php` → desactiva (nunca borra) — **solo admin**
+- `PATCH /clientes_actualizar.php` → edita únicamente el nombre — **solo admin**
+  → body: `{ "id", "nombre" }`
+- `DELETE /clientes_desactivar.php` → desactiva (nunca borra) — **solo admin**
   → body: `{ "id" }`
 
 **Fiados** (requieren `Authorization: Bearer <token>`):
@@ -83,3 +83,17 @@ Crear esa base vacía, copiar el esquema actualizado sin datos y arrancar PHP co
 Consultar `MEJORAS.md` para instalación de la migración 002, contratos de API,
 reglas de crédito, persistencia y programación del cierre. Aplicar también
 `migrations/002_dashboard_credito_reportes.sql` al instalar o actualizar.
+
+
+## Prueba de edición y desactivación
+
+Con MySQL de XAMPP encendido, ejecutar desde la raíz del repositorio:
+
+```powershell
+python api/dermexcel-api/tests/clientes_http.py
+```
+
+La prueba crea una base temporal independiente y la elimina al terminar. Comprueba
+PATCH de nombre, DELETE lógico, permisos de administrador, rechazo de campos
+no editables, conservación del saldo, teléfono e historial y cabeceras CORS.
+No requiere modificar la base de datos de la aplicación.

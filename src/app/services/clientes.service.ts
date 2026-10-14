@@ -38,17 +38,16 @@ export class ClientesService {
   }
 
   // ---- Update ----
-  async actualizarCliente(id: number, nombre: string, telefono?: string): Promise<ClienteResponse> {
-    return this.http.post<ClienteResponse>(`clientes_actualizar.php`, {
+  async actualizarCliente(id: number, nombre: string): Promise<ClienteResponse> {
+    return this.http.patch<ClienteResponse>(`clientes_actualizar.php`, {
         id,
         nombre,
-        telefono: telefono || '',
       });
   }
 
   // ---- "Delete" (soft delete: solo desactiva, nunca borra) ----
   async desactivarCliente(id: number): Promise<DesactivarResponse> {
-    return this.http.post<DesactivarResponse>(`clientes_desactivar.php`, {
+    return this.http.delete<DesactivarResponse>(`clientes_desactivar.php`, {
         id,
       });
   }
