@@ -13,6 +13,7 @@ import { NegocioService } from './negocio.service';
 import { ApiService } from './api.service';
 import { nuevaClaveOperacion } from './clave-operacion';
 import { ConexionService } from './conexion.service';
+import { Capacitor } from '@capacitor/core';
 
 describe('Servidor dinámico y Axios', () => {
   let solicitudes: InternalAxiosRequestConfig[];
@@ -33,6 +34,17 @@ describe('Servidor dinámico y Axios', () => {
     expect(normalizarServidor('192.168.0.222:80')).toBe('http://192.168.0.222/dermexcel-api');
     expect(normalizarServidor(' 192.168.0.222:8080/dermexcel-api/ ')).toBe('http://192.168.0.222:8080/dermexcel-api');
     expect(normalizarServidor('https://ejemplo.com/api')).toBe('https://ejemplo.com/api');
+  });
+  it('en la app nativa exige un servidor externo y recupera la IP guardada', () => {
+    vi.spyOn(Capacitor, 'isNativePlatform').mockReturnValue(true);
+    for (const host of ['localhost:80', '127.0.0.1', '[::1]']) {
+      expect(() => normalizarServidor(host)).toThrow('propio dispositivo');
+    }
+    const nativo = new ServidorService(TestBed.inject(CacheService), TestBed.inject(ConexionService));
+    expect(nativo.apiUrl()).toBe('');
+    nativo.guardar('10.0.2.2:80');
+    const restaurado = new ServidorService(TestBed.inject(CacheService), TestBed.inject(ConexionService));
+    expect(restaurado.apiUrl()).toBe('http://10.0.2.2/dermexcel-api');
   });
   it('rechaza MySQL 3306, protocolos y direcciones inválidas', () => {
     expect(() => normalizarServidor('192.168.0.222:3306')).toThrow('3306');

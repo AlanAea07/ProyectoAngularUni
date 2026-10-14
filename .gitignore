@@ -75,3 +75,6 @@ api/dermexcel-api/reportes_runtime.php
 fiados-private/
 tmp/pdfs/
 tmp/docx-conexion/
+
+# Respaldo local del editor (no subir a Git)
+/.vscode.zip

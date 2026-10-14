@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- XAMPP local usa HTTP. Esta excepción solo se incluye en la variante debug. -->
+    <application android:usesCleartextTraffic="true" />
+</manifest>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonHeader,IonToolbar,IonTitle,IonButtons,IonBackButton,IonContent,IonInput,IonButton,IonSpinner,IonList,IonItem,IonLabel } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 import { NegocioService, ReporteDiario } from '../../services/negocio.service';
+import { exportarPdf } from '../../services/exportar-pdf';
 @Component({selector:'app-reportes',standalone:true,templateUrl:'./reportes.page.html',imports:[CommonModule,FormsModule,IonHeader,IonToolbar,IonTitle,IonButtons,IonBackButton,IonContent,IonInput,IonButton,IonSpinner,IonList,IonItem,IonLabel]})
 export class ReportesPage {
   private negocio=inject(NegocioService); auth=inject(AuthService);
@@ -25,9 +26,8 @@ export class ReportesPage {
   async descargar(r:ReporteDiario) {
     if(this.ocupado())return;this.ocupado.set(true);this.error.set('');
     try {
-      const blob=await this.negocio.pdf(r.id);const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');a.href=url;a.download=`FiadOS-${r.fecha}.pdf`;document.body.appendChild(a);a.click();a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),60000);
+      const blob=await this.negocio.pdf(r.id);
+      await exportarPdf(blob, `FiadOS-${r.fecha}.pdf`);
     } catch {this.error.set('No se pudo descargar el PDF. Intenta de nuevo.');}
     finally {this.ocupado.set(false);}
   }

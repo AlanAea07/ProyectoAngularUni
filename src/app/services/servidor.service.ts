@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { CacheService } from './cache.service';
 import { ConexionService } from './conexion.service';
+import { Capacitor } from '@capacitor/core';
 
 export const SERVIDOR_KEY = 'fiados.servidor-api.v1';
 export function limpiarSesionLocal(): void {
@@ -17,6 +18,10 @@ export function normalizarServidor(valor: string): string {
     throw new Error('Usa una dirección HTTP o HTTPS sin usuario, contraseña, parámetros ni fragmentos.');
   }
   if (url.port === '3306') throw new Error('3306 es el puerto de MySQL. Usa el puerto de Apache, normalmente 80; PHP se conectará a MySQL en 3306.');
+  if (Capacitor.isNativePlatform() &&
+      (['localhost', '[::1]'].includes(url.hostname) || url.hostname.startsWith('127.'))) {
+    throw new Error('En la app instalada localhost es el propio dispositivo. En el emulador Android usa 10.0.2.2:80; en un teléfono usa la IP de tu laptop y el puerto de Apache.');
+  }
   const ruta = url.pathname.replace(/\/+$/, '');
   if (/\.php$/i.test(ruta) || /%/.test(ruta)) throw new Error('Indica la carpeta de la API, no un archivo PHP. Ejemplo: 192.168.0.222:80/dermexcel-api.');
   return url.origin + (ruta || '/dermexcel-api');
@@ -29,6 +34,7 @@ export class ServidorService {
   private inicial(): string {
     const guardado = localStorage.getItem(SERVIDOR_KEY);
     if (guardado) { try { return normalizarServidor(guardado); } catch { /* Preferencia antigua inválida. */ } }
+    if (Capacitor.isNativePlatform()) return '';
     const host = window.location.hostname;
     return host && !['localhost', '127.0.0.1', '[::1]'].includes(host) && /^https?:$/.test(window.location.protocol)
       ? normalizarServidor(`${window.location.protocol}//${host}`) : normalizarServidor(environment.apiUrl);
