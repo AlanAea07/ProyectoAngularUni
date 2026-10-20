@@ -1,3 +1,4 @@
+import { ActualizarConsultaDirective } from '../../actualizar-consulta.directive';
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -24,7 +25,7 @@ import { mensajeError } from '../../services/resiliencia.interceptor';
   templateUrl: 'inicio.page.html',
   styleUrls: ['inicio.page.scss'],
   standalone: true,
-  imports: [
+  imports: [ActualizarConsultaDirective,
     CommonModule,
     IonHeader,
     IonToolbar,

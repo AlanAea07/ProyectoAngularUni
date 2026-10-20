@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/sincronizacion.php";
 require_once "config.php";
 
 $usuarioActual = requireAuth($pdo);
@@ -14,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'PATCH') {
 }
 
 $body = getJsonBody();
+iniciarOperacion($pdo, $usuarioActual, $body);
 // Esta operación solo permite cambiar el nombre, nunca saldo ni teléfono.
 if (array_diff(array_keys($body), ['id', 'nombre']) || !is_string($body['nombre'] ?? null)) {
     http_response_code(400);
@@ -63,7 +65,7 @@ $cliente = $stmt->fetch();
 $cliente['saldo'] = (float) $cliente['saldo'];
 $cliente['activo'] = (bool) $cliente['activo'];
 
-echo json_encode([
+confirmarOperacion($pdo, [
     "success" => true,
     "cliente" => $cliente
 ]);

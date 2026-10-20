@@ -6,7 +6,7 @@
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PATCH, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Operacion-Id");
 header("Content-Type: application/json; charset=UTF-8");
 
 date_default_timezone_set('America/Mexico_City');
@@ -18,7 +18,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
 
 // -------- Datos de conexión (ajusta a tu XAMPP/servidor) --------
 $DB_HOST = "localhost";
-$DB_PORT = 3306;
+$DB_PORT = (int)(getenv("FIADOS_DB_PORT") ?: 3306);
 $DB_NAME = getenv("FIADOS_DB_NAME") ?: "fiados_saas";
 $DB_USER = "root";
 $DB_PASS = "";

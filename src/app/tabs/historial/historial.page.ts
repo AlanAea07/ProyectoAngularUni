@@ -1,3 +1,4 @@
+import { ActualizarConsultaDirective } from '../../actualizar-consulta.directive';
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -6,7 +7,7 @@ import { MovimientosService, Movimiento } from '../../services/movimientos.servi
 import { mensajeError } from '../../services/resiliencia.interceptor';
 @Component({
   selector: 'app-historial', standalone: true, templateUrl: './historial.page.html',
-  imports: [CommonModule, RouterLink, IonContent, IonHeader, IonTitle, IonToolbar, IonSearchbar, IonList, IonItem, IonLabel, IonNote, IonSpinner, IonButton],
+  imports: [ActualizarConsultaDirective,CommonModule, RouterLink, IonContent, IonHeader, IonTitle, IonToolbar, IonSearchbar, IonList, IonItem, IonLabel, IonNote, IonSpinner, IonButton],
 })
 export class HistorialPage {
   private servicio = inject(MovimientosService);

@@ -21,7 +21,7 @@ export class MovimientosService {
     return this.http.get<{success: boolean; resumen: Resumen}>(`dashboard.php`);
   }
   pagar(clienteId: number, monto: number, metodo: string, clave: string) {
-    return this.http.post<{success: boolean; message?: string; saldo_actualizado: number}>(
+    return this.http.post<{success: boolean; pendiente?: boolean; message?: string; saldo_actualizado: number}>(
       `pagos.php`, {cliente_id: clienteId, monto, metodo_pago: metodo, clave_operacion: clave});
   }
 }

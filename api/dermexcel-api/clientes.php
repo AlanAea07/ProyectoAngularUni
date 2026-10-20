@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/sincronizacion.php";
 require_once "config.php";
 require_once "credito.php";
 
@@ -36,6 +37,7 @@ if ($metodo === 'POST') {
     requireRole($usuarioActual, ['admin', 'vendedor']);
 
     $body = getJsonBody();
+    iniciarOperacion($pdo, $usuarioActual, $body);
 
     $nombre   = trim($body['nombre'] ?? '');
     $telefono = trim($body['telefono'] ?? '');
@@ -58,7 +60,7 @@ if ($metodo === 'POST') {
 
     $nuevoId = (int) $pdo->lastInsertId();
 
-    echo json_encode([
+    confirmarOperacion($pdo, [
         "success" => true,
         "cliente" => [
             "id"       => $nuevoId,

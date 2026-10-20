@@ -23,7 +23,7 @@ describe('Servidor dinámico y Axios', () => {
     const client = axios.create({adapter: async config => {
       solicitudes.push(config);
       return {config, headers: new AxiosHeaders(), status: 200, statusText: 'OK',
-        data: config.responseType === 'blob' ? new Blob(['%PDF prueba'], {type:'application/pdf'}) : {success:true}};
+        data: config.responseType === 'blob' ? new Blob(['%PDF prueba'], {type:'application/pdf'}) : {success:true, sincronizacion:1}};
     }});
     TestBed.configureTestingModule({providers: [provideRouter([]), {provide: AXIOS_CLIENT, useValue: client}]});
     vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
@@ -73,6 +73,7 @@ describe('Servidor dinámico y Axios', () => {
     const auth = TestBed.inject(AuthService), antigua = TestBed.inject(ApiService);
     servidor.guardar('192.168.0.222:8080');
     localStorage.setItem('token', 'nuevo'); localStorage.setItem('sesion_servidor', servidor.apiUrl());
+    localStorage.setItem('negocio_id', '1'); localStorage.setItem('usuario_id', '10');
     await auth.login('demo', 'demo');
     await clientes.getClientes('Ana & Luis'); await clientes.getCliente(7);
     await clientes.crearCliente('Prueba'); await clientes.actualizarCliente(7, 'Prueba'); await clientes.desactivarCliente(7);
@@ -83,7 +84,7 @@ describe('Servidor dinámico y Axios', () => {
     expect(await negocio.pdf(1)).toBeInstanceOf(Blob);
     await antigua.getClientes(); await antigua.login('demo','demo');
     await TestBed.inject(ApiClient).get('estado.php'); await auth.salir();
-    expect(solicitudes).toHaveLength(20);
+    expect(solicitudes).toHaveLength(21);
     const edicion = solicitudes.find(c => c.url?.endsWith('clientes_actualizar.php'));
     expect(edicion?.method).toBe('patch');
     expect(JSON.parse(edicion?.data)).toEqual({id: 7, nombre: 'Prueba'});

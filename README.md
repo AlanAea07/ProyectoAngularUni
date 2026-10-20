@@ -293,3 +293,15 @@ un error controlado; Network permite comprobar GET, POST, PATCH y DELETE.
 El proyecto busca demostrar el desarrollo de una aplicación móvil conectada a un backend mediante una API, aplicando conceptos de desarrollo frontend, backend, bases de datos, autenticación, persistencia de información y diseño de interfaces móviles.
 
 La aplicación está diseñada para resolver un problema sencillo y común en pequeñas tiendas: **mantener un control organizado de quién debe, cuánto debe, cuánto ha pagado y cuándo realizó cada movimiento.**
+
+
+## Persistencia y sincronización local/remota
+
+Se conserva la caché existente y se añade una cola local para clientes, fiados y
+pagos. La app reintenta al recuperar conexión y permite sincronizar manualmente.
+Los pendientes y rechazos se muestran en el indicador global; el servidor evita
+aplicar dos veces la misma operación.
+
+Consulta [el flujo, alcance y activación](docs/SINCRONIZACION.md). Requiere aplicar
+la migración aditiva `003_sincronizacion.sql` y actualizar PHP antes de habilitar
+el envío de pendientes. La API antigua mantiene la cola sin enviar.

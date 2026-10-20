@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [appActualizarConsulta]="ionViewWillEnter.bind(this)" [fullscreen]="true">
 
   <div class="estado" *ngIf="cargando()">
     <ion-spinner></ion-spinner>

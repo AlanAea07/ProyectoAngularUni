@@ -97,3 +97,19 @@ La prueba crea una base temporal independiente y la elimina al terminar. Comprue
 PATCH de nombre, DELETE lógico, permisos de administrador, rechazo de campos
 no editables, conservación del saldo, teléfono e historial y cabeceras CORS.
 No requiere modificar la base de datos de la aplicación.
+
+
+## Sincronización local/remota
+
+Aplicar `migrations/003_sincronizacion.sql` sobre la base seleccionada. Actualizar
+los endpoints de clientes/fiados/pagos, `sincronizacion.php`, `estado.php` y la
+cabecera CORS `X-Operacion-Id` en `config.php`, conservando las credenciales.
+`estado.php` anuncia `sincronizacion: 1` cuando existe la tabla de control.
+
+Los clientes nuevos envían `X-Operacion-Id` con un UUID persistido en el dispositivo.
+El cambio y su respuesta se confirman en una sola transacción; reenviar la misma
+clave/datos devuelve la respuesta guardada, sin repetir el cambio. La clave está
+separada por negocio y usuario. Peticiones sin cabecera conservan el contrato
+anterior. Los roles, límites de crédito y validación de saldo siguen vigentes.
+
+Flujo completo, limitaciones y activación: [SINCRONIZACION.md](../../docs/SINCRONIZACION.md).

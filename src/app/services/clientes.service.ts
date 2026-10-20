@@ -4,6 +4,7 @@ import { ClienteResponse, ClientesResponse } from '../models/cliente.model';
 
 export interface DesactivarResponse {
   success: boolean;
+  pendiente?: boolean;
   message?: string;
 }
 

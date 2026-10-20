@@ -1,3 +1,4 @@
+import { ActualizarConsultaDirective } from '../../actualizar-consulta.directive';
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +33,7 @@ import { mensajeError } from '../../services/resiliencia.interceptor';
   standalone: true,
   templateUrl: './clientes.page.html',
   styleUrls: ['./clientes.page.scss'],
-  imports: [
+  imports: [ActualizarConsultaDirective,
     CommonModule,
     FormsModule,
     IonContent,
@@ -63,6 +64,8 @@ export class ClientesPage implements OnInit {
   guardando = signal(false);
   private dialogoAbierto = false;
   errorMsg = signal('');
+  aviso = signal('');
+  actualizarConsulta = () => { if (!this.guardando()) void this.cargarClientes(this.textoBusqueda); };
 
   textoBusqueda = '';
 
@@ -160,12 +163,14 @@ export class ClientesPage implements OnInit {
   private async crearCliente(nombre: string, telefono: string) {
     if (this.guardando()) return;
     this.guardando.set(true);
-    this.errorMsg.set('');
+    this.errorMsg.set(''); this.aviso.set('');
 
     try {
       const respuesta = await this.clientesService.crearCliente(nombre, telefono);
 
-      if (respuesta.success) {
+      if (respuesta.pendiente) {
+        this.aviso.set(respuesta.message || 'Operación guardada localmente, pendiente de sincronizar.');
+      } else if (respuesta.success) {
         await this.cargarClientes(this.textoBusqueda);
       } else {
         this.errorMsg.set(respuesta.message || 'No se pudo crear el cliente');
@@ -215,12 +220,14 @@ export class ClientesPage implements OnInit {
   private async actualizarCliente(id: number, nombre: string) {
     if (!this.authService.esAdmin() || this.guardando()) return;
     this.guardando.set(true);
-    this.errorMsg.set('');
+    this.errorMsg.set(''); this.aviso.set('');
 
     try {
       const respuesta = await this.clientesService.actualizarCliente(id, nombre);
 
-      if (respuesta.success) {
+      if (respuesta.pendiente) {
+        this.aviso.set(respuesta.message || 'Operación guardada localmente, pendiente de sincronizar.');
+      } else if (respuesta.success) {
         await this.cargarClientes(this.textoBusqueda);
       } else {
         this.errorMsg.set(respuesta.message || 'No se pudo actualizar el cliente');
@@ -264,12 +271,14 @@ export class ClientesPage implements OnInit {
   private async desactivarCliente(id: number) {
     if (!this.authService.esAdmin() || this.guardando()) return;
     this.guardando.set(true);
-    this.errorMsg.set('');
+    this.errorMsg.set(''); this.aviso.set('');
 
     try {
       const respuesta = await this.clientesService.desactivarCliente(id);
 
-      if (respuesta.success) {
+      if (respuesta.pendiente) {
+        this.aviso.set(respuesta.message || 'Operación guardada localmente, pendiente de sincronizar.');
+      } else if (respuesta.success) {
         await this.cargarClientes(this.textoBusqueda);
       } else {
         this.errorMsg.set(respuesta.message || 'No se pudo desactivar el cliente');

@@ -10,7 +10,7 @@ Implementación de la actividad académica del 28 de septiembre de 2026.
 - Claves por negocio, usuario y URL. Limpieza al iniciar/cerrar sesión y tras escrituras
   confirmadas. No se sustituyen errores 401 ni 403 con datos locales.
 - Límite de 10 segundos por petición; 60 segundos para reportes.
-- No se guardan escrituras pendientes ni hay sincronización automática.
+- Actualización del 20 de octubre: se incorporó cola de escrituras y sincronización automática/manual. Ver [SINCRONIZACION.md](SINCRONIZACION.md).
 
 No desconectar toda la laptop para demostrar un fallo de API: con XAMPP local puede
 seguir funcionando. Usar DevTools, Network, Offline con la aplicación ya cargada;
@@ -19,7 +19,7 @@ Entrar antes a las pantallas a probar para tener copia de sus URLs exactas.
 Restaurar la red y retirar el bloqueo al terminar. El Word incluye los pasos y
 espacios para capturas.
 
-## Verificación ejecutada
+## Verificación histórica (28 de septiembre)
 
 - `ng test --watch=false`: 20 pruebas aprobadas en 5 archivos, 15 nuevas.
 - `ng build`: compilación de producción aprobada.
@@ -36,7 +36,7 @@ espacios para capturas.
 
 Incluir los cambios de `src` al compilar Angular. Copiar `estado.php` y el ajuste
 de errores de `config.php` a la API desplegada, conservando sus credenciales reales.
-No hay migraciones de base de datos para esta actividad.
+La versión original no requería migraciones. La sincronización añadida posteriormente requiere la migración 003, descrita en SINCRONIZACION.md.
 
 ## Documento
 

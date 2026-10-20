@@ -7,6 +7,7 @@ import { vi } from 'vitest';
 import { environment } from '../../environments/environment';
 import { CACHE_KEY, CACHE_TTL, CacheService } from './cache.service';
 import { ConexionService } from './conexion.service';
+import { ColaService } from './cola.service';
 import { AuthService } from './auth.service';
 
 
@@ -42,7 +43,7 @@ describe('Consulta local y manejo de fallos', () => {
   let conexion: ConexionService;
   const url = environment.apiUrl + '/clientes.php';
   const body = {success: true, clientes: [{id: 1, nombre: 'Cliente de prueba', saldo: 100}]};
-  beforeEach(() => {
+  beforeEach(async () => {
     backend = transportePrueba();
     TestBed.configureTestingModule({providers: [provideRouter([]), {provide: AXIOS_CLIENT, useValue: backend.client}]});
     localStorage.clear();
@@ -52,6 +53,9 @@ describe('Consulta local y manejo de fallos', () => {
     localStorage.setItem('sesion_servidor', TestBed.inject(ServidorService).apiUrl());
     cache = TestBed.inject(CacheService); conexion = TestBed.inject(ConexionService);
     vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    const estado = http.getRemoto('estado.php');
+    backend.expectOne(environment.apiUrl + '/estado.php').flush({success: true, sincronizacion: 1});
+    await estado;
   });
   afterEach(() => { backend.verify(); localStorage.clear(); vi.useRealTimers(); vi.restoreAllMocks(); });
   async function cargar() {
@@ -137,11 +141,12 @@ describe('Consulta local y manejo de fallos', () => {
     expect(await respuesta).toEqual(body);
     expect(pendiente.cancelled).toBe(true);
   });
-  it('un POST fallido no aparenta éxito, no se encola y no se reenvía', async () => {
+  it('un POST fallido queda pendiente localmente sin alterar saldo ni aparentar confirmación remota', async () => {
     const pago = environment.apiUrl + '/pagos.php';
     const respuesta = http.post('pagos.php', {monto: 10}).catch(e => e);
     backend.expectOne(pago).error(new ProgressEvent('error'));
-    expect((await respuesta as {error: {message: string}}).error.message).toContain('No se pudo confirmar el registro');
+    expect(await respuesta).toMatchObject({success: true, pendiente: true});
+    expect(TestBed.inject(ColaService).listar(http.contexto())).toHaveLength(1);
     backend.expectNone(pago);
     expect(localStorage.getItem(CACHE_KEY)).toBeNull();
   });

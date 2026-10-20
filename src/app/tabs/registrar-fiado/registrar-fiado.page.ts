@@ -55,6 +55,7 @@ export class RegistrarFiadoPage {
 
   guardando = signal(false);
   errorMsg = signal('');
+  pendiente = signal('');
 
   constructor(
     private route: ActivatedRoute,
@@ -64,6 +65,7 @@ export class RegistrarFiadoPage {
   ) {}
 
   async ionViewWillEnter() {
+    this.pendiente.set('');
     this.monto = null; this.detalle = ''; this.errorMsg.set(''); this.cliente.set(null);
     this.clienteId = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -79,7 +81,7 @@ export class RegistrarFiadoPage {
   }
 
   async guardar() {
-    if (this.guardando()) return;
+    if (this.guardando() || this.pendiente()) return;
     this.errorMsg.set('');
 
     if (!this.cliente()?.activo || !this.monto || !Number.isFinite(this.monto) || this.monto <= 0 || Math.abs(this.monto * 100 - Math.round(this.monto * 100)) > 0.00001) {
@@ -96,7 +98,9 @@ export class RegistrarFiadoPage {
     try {
       const resp = await this.fiadosService.registrarFiado(this.clienteId, this.monto, this.detalle);
 
-      if (resp.success) {
+      if (resp.pendiente) {
+        this.pendiente.set(resp.message || 'Fiado guardado localmente, pendiente de sincronizar.');
+      } else if (resp.success) {
         // El fiado ya quedó guardado en el historial (no se puede editar
         // ni borrar); regresamos al detalle del cliente para verlo reflejado.
         this.router.navigateByUrl(`/tabs/cliente-detalle/${this.clienteId}`, { replaceUrl: true });
@@ -105,7 +109,7 @@ export class RegistrarFiadoPage {
       }
     } catch (error) {
       console.error('Error al registrar fiado:', error);
-      this.errorMsg.set((error as {error?:{message?:string}})?.error?.message || 'Error al conectar con el servidor.');
+      this.errorMsg.set(mensajeError(error));
     } finally {
       this.guardando.set(false);
     }

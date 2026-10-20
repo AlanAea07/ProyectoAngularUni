@@ -12,10 +12,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [appActualizarConsulta]="actualizarConsulta" [fullscreen]="true">
   <div class="page-intro"><p class="eyebrow">MI TIENDA</p><h2>Tus clientes</h2><p>Personas de confianza, cuentas bien cuidadas.</p></div>
 
 
+  <p class="ion-padding" role="status" *ngIf="aviso()">{{aviso()}}</p>
   <div class="estado" role="status" aria-live="polite" *ngIf="guardando()">
     <ion-spinner></ion-spinner><p>Guardando cambios...</p>
   </div>

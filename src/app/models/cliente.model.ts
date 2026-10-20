@@ -16,12 +16,14 @@ export interface Cliente {
 
 export interface ClientesResponse {
   success: boolean;
+  pendiente?: boolean;
   message?: string;
   clientes?: Cliente[];
 }
 
 export interface ClienteResponse {
   success: boolean;
+  pendiente?: boolean;
   message?: string;
   cliente?: Cliente;
 }

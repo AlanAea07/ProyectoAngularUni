@@ -8,12 +8,14 @@ export interface Fiado {
 
 export interface FiadosResponse {
   success: boolean;
+  pendiente?: boolean;
   message?: string;
   fiados?: Fiado[];
 }
 
 export interface RegistrarFiadoResponse {
   success: boolean;
+  pendiente?: boolean;
   message?: string;
   fiado?: {
     id: number;

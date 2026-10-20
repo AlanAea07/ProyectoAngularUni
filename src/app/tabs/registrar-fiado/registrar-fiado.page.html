@@ -40,11 +40,12 @@
     {{ errorMsg() }}
   </ion-note>
 
+  <p role="status" *ngIf="pendiente()">{{pendiente()}}</p>
   <ion-note class="aviso-historial">
     Este fiado quedará guardado en el historial del cliente y no se podrá editar ni borrar después.
   </ion-note>
 
-  <ion-button expand="block" size="large" class="boton-guardar" (click)="guardar()" [disabled]="guardando() || !cliente()?.activo || cliente()?.credito_disponible === 0">
+  <ion-button expand="block" size="large" class="boton-guardar" (click)="guardar()" [disabled]="guardando() || !!pendiente() || !cliente()?.activo || cliente()?.credito_disponible === 0">
     <ion-spinner *ngIf="guardando()" name="crescent"></ion-spinner>
     <span *ngIf="!guardando()">Registrar fiado</span>
   </ion-button>

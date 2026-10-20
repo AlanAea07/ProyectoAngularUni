@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/sincronizacion.php";
 require_once 'config.php';
 $usuario = requireAuth($pdo);
 requireRole($usuario, ['admin', 'vendedor']);
@@ -7,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit(json_encode(['success' => false, 'message' => 'Método no permitido']));
 }
 $body = getJsonBody();
+iniciarOperacion($pdo, $usuario, $body);
 $clienteId = filter_var($body['cliente_id'] ?? null, FILTER_VALIDATE_INT);
 $monto = (string) ($body['monto'] ?? '');
 $metodo = $body['metodo_pago'] ?? '';
@@ -18,7 +20,7 @@ if (!$clienteId || !preg_match('/^\d{1,8}(\.\d{1,2})?$/D', $monto) || (float)$mo
     exit(json_encode(['success' => false, 'message' => 'Revisa cliente, monto (máximo dos decimales) y método de pago.']));
 }
 try {
-    $pdo->beginTransaction();
+    if (!$pdo->inTransaction()) $pdo->beginTransaction();
     // Serializa pagos del mismo cliente: dos cajeros no pueden gastar el mismo saldo.
     $stmt = $pdo->prepare('SELECT saldo FROM clientes WHERE id = ? AND negocio_id = ? FOR UPDATE');
     $stmt->execute([$clienteId, $usuario['negocio_id']]);
@@ -37,8 +39,8 @@ try {
             http_response_code(409);
             exit(json_encode(['success' => false, 'message' => 'La operación ya se usó con otros datos. Consulta el historial.']));
         }
-        $pdo->commit();
-        exit(json_encode(['success' => true, 'pago_id' => (int)$previo['id'], 'saldo_actualizado' => (float)$cliente['saldo']]));
+        confirmarOperacion($pdo, ['success' => true, 'pago_id' => (int)$previo['id'], 'saldo_actualizado' => (float)$cliente['saldo']]);
+        exit;
     }
     if ((int)round((float)$monto * 100) > (int)round((float)$cliente['saldo'] * 100)) {
         $pdo->rollBack();
@@ -52,8 +54,7 @@ try {
     $stmt = $pdo->prepare('SELECT saldo FROM clientes WHERE id = ? AND negocio_id = ?');
     $stmt->execute([$clienteId, $usuario['negocio_id']]);
     $saldo = (float)$stmt->fetchColumn();
-    $pdo->commit();
-    echo json_encode(['success' => true, 'pago_id' => $id, 'saldo_actualizado' => $saldo]);
+    confirmarOperacion($pdo, ['success' => true, 'pago_id' => $id, 'saldo_actualizado' => $saldo]);
 } catch (Throwable $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     error_log($e->getMessage());

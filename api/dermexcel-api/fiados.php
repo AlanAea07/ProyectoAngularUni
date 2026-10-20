@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/sincronizacion.php";
 require_once "config.php";
 require_once "credito.php";
 
@@ -66,6 +67,7 @@ if ($metodo === 'POST') {
     requireRole($usuarioActual, ['admin', 'vendedor']);
 
     $body = getJsonBody();
+    iniciarOperacion($pdo, $usuarioActual, $body);
 
     $clienteId = (int) ($body['cliente_id'] ?? 0);
     $monto     = (string) ($body['monto'] ?? '');
@@ -84,7 +86,7 @@ if ($metodo === 'POST') {
     }
 
     try {
-    $pdo->beginTransaction();
+    if (!$pdo->inTransaction()) $pdo->beginTransaction();
     $config = configuracionNegocio($pdo, (int)$negocioId, true);
     // Mismo bloqueo de cliente que pagos: el límite se verifica sobre el saldo vigente.
     $stmt = $pdo->prepare('SELECT id,saldo FROM clientes WHERE id=? AND negocio_id=? AND activo=1 FOR UPDATE');
@@ -117,8 +119,7 @@ if ($metodo === 'POST') {
     $stmt->execute(["id" => $clienteId]);
     $saldoActual = (float) $stmt->fetchColumn();
 
-    $pdo->commit();
-    echo json_encode([
+    confirmarOperacion($pdo, [
         "success" => true,
         "fiado" => [
             "id"              => $nuevoId,

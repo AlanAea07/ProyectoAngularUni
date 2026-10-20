@@ -40,6 +40,11 @@ export class CacheService {
       this.advertencia.set('El navegador no pudo guardar la copia local. Esta consulta requiere conexión.');
     }
   }
+  rutas(scope: string, base: string): string[] {
+    const prefijo = `${scope}|${base}/`;
+    return Object.keys(this.leer()).filter(key => key.startsWith(prefijo)).map(key => key.slice(prefijo.length))
+      .filter(ruta => /^(clientes|dashboard|resumen|historial|fiados)\.php(?:\?[^#]*)?$/.test(ruta));
+  }
   limpiar(): void {
     this.revision++;
     try { localStorage.removeItem(CACHE_KEY); } catch { /* Almacenamiento no disponible. */ }

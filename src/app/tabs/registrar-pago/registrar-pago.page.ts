@@ -67,10 +67,11 @@ export class RegistrarPagoPage {
     try {
       const resp = await this.movimientos.pagar(c.id, monto, this.metodo, this.clave);
       if (!resp.success) { this.error.set(resp.message || 'No se pudo guardar el pago.'); return; }
+      if (resp.pendiente) { this.exito.set(resp.message || 'Pago pendiente de sincronizar.'); return; }
       this.cliente.set({...c, saldo: resp.saldo_actualizado});
       this.exito.set('Pago registrado correctamente.');
     } catch (error: unknown) {
-      this.error.set((error as {error?: {message?: string}})?.error?.message || 'No se pudo confirmar el pago. Reintenta sin cambiar los datos; no se duplicará.');
+      this.error.set(mensajeError(error));
     } finally { this.guardando.set(false); }
   }
   verHistorial() { void this.router.navigateByUrl(`/tabs/cliente-detalle/${this.cliente()!.id}`, {replaceUrl: true}); }

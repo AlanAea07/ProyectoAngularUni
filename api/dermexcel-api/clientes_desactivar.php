@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/sincronizacion.php";
 require_once "config.php";
 
 $usuarioActual = requireAuth($pdo);
@@ -14,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
 }
 
 $body = getJsonBody();
+iniciarOperacion($pdo, $usuarioActual, $body);
 $id = (int) ($body['id'] ?? 0);
 
 if ($id <= 0) {
@@ -36,7 +38,7 @@ if (!$stmt->fetch()) {
 $stmt = $pdo->prepare("UPDATE clientes SET activo = 0 WHERE id = :id AND negocio_id = :negocio_id");
 $stmt->execute(["id" => $id, "negocio_id" => $negocioId]);
 
-echo json_encode([
+confirmarOperacion($pdo, [
     "success" => true,
     "message" => "Cliente desactivado"
 ]);
